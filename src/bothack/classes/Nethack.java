@@ -60,10 +60,7 @@ public class Nethack implements NethackInterface {
             }
 
         } catch (IOException e) {
-            System.out.println("klhkhkhaaaaaaaaaaaaaaaaaaaaaaaakjjk");
             e.printStackTrace();
-            System.out.println("klhaaaaaaaaaaaaaaaaaaaaaaaaaaaaaakhkhkjjk");
-            System.out.println(e.toString());
         }
     }
 
