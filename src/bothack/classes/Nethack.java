@@ -57,6 +57,7 @@ public class Nethack implements NethackInterface {
                     break;
                 }
                 System.out.println(terminal);
+
             }
 
         } catch (IOException e) {
