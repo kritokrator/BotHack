@@ -59,4 +59,25 @@ public class Tile {
         return glyph;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Tile tile = (Tile) o;
+
+        if (color != tile.color) return false;
+        if (glyph != null ? !glyph.equals(tile.glyph) : tile.glyph != null) return false;
+        if (!symbol.equals(tile.symbol)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = symbol.hashCode();
+        result = 31 * result + color.hashCode();
+        result = 31 * result + (glyph != null ? glyph.hashCode() : 0);
+        return result;
+    }
 }

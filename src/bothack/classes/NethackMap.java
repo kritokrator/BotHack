@@ -19,10 +19,23 @@ public class NethackMap implements NethackMapInterface {
         String[] args = s.split(" ");
         Coordinate c = new Coordinate(Integer.parseInt(args[0]),Integer.parseInt(args[1]));
         Tile t = new Tile(args[5],args[2],args[3]);
+        update(c,t);
+    }
+    @Override
+    public void update(Coordinate c, Tile t){
         if(level.containsKey(c)){
-
+            level.replace(c,level.get(c),t);
         }
-
+        else{
+            level.put(c,t);
+        }
+    }
+    @Override
+    public void update(String x, String y, String character, String color, String glyph)
+    {
+        Coordinate c = new Coordinate(Integer.parseInt(x),Integer.parseInt(y));
+        Tile t = new Tile(character,color,glyph);
+        update(c,t);
     }
 
     @Override

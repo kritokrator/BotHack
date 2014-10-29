@@ -53,7 +53,7 @@ public class Nethack implements NethackInterface {
                 {
                     System.out.println(terminal);
                     //TODO user input handling here 'handleUserInput(terminal)'
-                    System.out.println("User input handling here");
+                    System.out.println("UserInterface input handling here");
                     break;
                 }
                 System.out.println(terminal);
