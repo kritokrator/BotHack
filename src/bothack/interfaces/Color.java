@@ -22,7 +22,7 @@ public enum Color {
     WHITE ("15");
 
     private String index;
-    private Command(String index){
+    private Color(String index){
         this.index = index;
     }
     public String getIndex(){

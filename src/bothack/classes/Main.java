@@ -7,6 +7,8 @@ public class Main {
     public static void main(String[] args){
         try {
             Nethack game = new Nethack();
+            game.play();
+            game.getUserInput();
         }catch(Exception e){
             System.out.println(e);
         }
