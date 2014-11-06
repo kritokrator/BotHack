@@ -13,5 +13,5 @@ public interface NethackInterface {
     public void save() throws NotYetImplementedException;   //no args save current progress to the default location
     public void quit() throws NotYetImplementedException;   // exit the game, destroy everything
     public void readNethackLine() throws IOException;
-    public String getUserInput();                           // get the next command to perform
+    public String getUserInput(String prompt);              // get next command
 }

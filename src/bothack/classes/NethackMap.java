@@ -17,8 +17,8 @@ public class NethackMap implements NethackMapInterface {
     @Override
     public void update(String s) {
         String[] args = s.split(" ");
-        Coordinate c = new Coordinate(Integer.parseInt(args[0]),Integer.parseInt(args[1]));
-        Tile t = new Tile(args[5],args[2],args[3]);
+        Coordinate c = new Coordinate(Integer.parseInt(args[1]),Integer.parseInt(args[2]));
+        Tile t = new Tile(args[6],args[3],args[4]);
         update(c,t);
     }
     @Override

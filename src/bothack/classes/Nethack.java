@@ -85,12 +85,6 @@ public class Nethack implements NethackInterface {
     }
 
     @Override
-    public void quit() throws NotYetImplementedException {
-        //TODO implement this
-        throw new NotYetImplementedException();
-    }
-
-    @Override
     public void readNethackLine() throws IOException {
         int character;
         boolean prompt = false;
@@ -108,8 +102,9 @@ public class Nethack implements NethackInterface {
         else{
             //the buffer contains an user prompt, the game is waiting for user input
             result += Character.toString((char)character);
-            while((character = input.read()) != 62)
+            while(input.ready())
             {
+                character = input.read();
                 result += Character.toString((char)character);
             }
             //process command prompt
@@ -118,15 +113,31 @@ public class Nethack implements NethackInterface {
         }
     }
 
+    @Override
+    public void quit() throws NotYetImplementedException {
+        //TODO implement this
+        throw new NotYetImplementedException();
+    }
+    @Override
     public String getUserInput(String prompt){
         Scanner keyboard = new Scanner(in);
-        System.out.printf("enter a %s command", prompt);
+        System.out.printf("enter a %s command: ", prompt);
         String input = keyboard.nextLine();
-        return input;
+
+        return input + "\r\n";
+
     }
     public void processNethackCommand(String output){
-        if(outputResult.contains(output)){
+        String[] tmp = output.split(" ");                   // placeholder for the name of the command with the preceeding parenthesis
+        String command = tmp[0].substring(1);               // the actual command without the preceeding '(' and without other parameters
+        if(outputResult.contains(command)){
             //process the command
+            if(output.contains("nhapi-print-glyph")){
+                theMap.update(output);
+            }
+            else{
+                System.err.println("command is in progress");
+            }
         }
         else{
             System.err.println("the command has not been implemented yet");
