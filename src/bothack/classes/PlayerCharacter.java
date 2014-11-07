@@ -553,45 +553,35 @@ public class PlayerCharacter {
         boolean state1 = false;
         boolean state2 = false;
         boolean state3 = false;
-        boolean state4 = false;
         String[] partialResult;
         String tmp = new String("");
         ArrayList<String> partialStatus = new ArrayList<String>();
-        for(int i =0 ; i< output.length(); i++){
+        for(int i =0 ; i< output.length(); i++) {
             //this is a crude implementation of a finite state machine
             //if there have been three left parenthesis then a character belongs to a new attribute and is added to the temp string
             //if a closing parens is found then a new attribute is added to the array list
-            if(output.charAt(i) == '(' && state1==true && state2 == true  && state3==true && state4==false)
-            {
-                state4 = true;
+            if (output.charAt(i) == '(' && state1 == true && state2 == true && state3 == false) {
+                state3 = true;
                 tmp = "";
             }
-            else if(output.charAt(i) == '(' && state1==true && state2 == true  && state3==false && state4==false)
-                state3 = true;
-            else if(output.charAt(i) == '(' && state1 == true && state2 == false && state3==false && state4==false)
+            else if (output.charAt(i) == '(' && state1 == true && state2 == false && state3 == false)
                 state2 = true;
-            else if(output.charAt(i) == '(' && state1 == false && state2 == false && state3==false && state4==false)
+            else if (output.charAt(i) == '(' && state1 == false && state2 == false && state3 == false)
                 state1 = true;
 
-            if(state1 == true && state2 == false && state3==false && state4==false && output.charAt(i) == ')'){
+            else if (state1 == true && state2 == false && state3 == false && output.charAt(i) == ')') {
                 state1 = false;
-            }
-            else if(state1 == true && state2 == true && state3 == false && state4==false && output.charAt(i) == ')')
+            } else if (state1 == true && state2 == true && state3 == false && output.charAt(i) == ')')
                 state2 = false;
-            else if(state1 == true && state2 == true && state3 == true && state4==false && output.charAt(i) == ')')
+            else if (state1 == true && state2 == true && state3 == true && output.charAt(i) == ')') {
                 state3 = false;
-            else if(state1 == true && state2 == true && state3 == true && state4==true && output.charAt(i) == ')')
-            {
-                state4=false;
                 partialStatus.add(tmp);
+            } else if (state1 == true && state2 == true && state3 == true) {
+                tmp += output.charAt(i);
+            } else {
+               // throw new PlayerUpdateStatusException();
             }
-            else if(state1 == true && state2 == true && state3 == true && state4==true)
-            {
-                tmp+=output.charAt(i);
-            }
-            else{
-                throw new PlayerUpdateStatusException();
-            }
+        }
             //this is a crude way to parse the resulting Array list and add the neccessary attributes to the class
             for(String attr : partialStatus){
                 if(attr.contains("name")){
@@ -714,21 +704,21 @@ public class PlayerCharacter {
                     partialResult = attr.split(" ");
                     this.charisma = Integer.parseInt(partialResult[1]);
                 }
-                else if(attr.contains("HP")){
-                    partialResult = attr.split(" ");
-                    this.currentHealthPoints = Long.parseLong(partialResult[1]);
-                }
                 else if(attr.contains("HPmax")){
                     partialResult = attr.split(" ");
                     this.healthPoints = Long.parseLong(partialResult[1]);
                 }
-                else if(attr.contains("PW")){
+                else if(attr.contains("HP")){
                     partialResult = attr.split(" ");
-                    this.currentPower = Long.parseLong(partialResult[1]);
+                    this.currentHealthPoints = Long.parseLong(partialResult[1]);
                 }
                 else if(attr.contains("PWmax")){
                     partialResult = attr.split(" ");
                     this.power = Long.parseLong(partialResult[1]);
+                }
+                else if(attr.contains("PW")){
+                    partialResult = attr.split(" ");
+                    this.currentPower = Long.parseLong(partialResult[1]);
                 }
                 else if(attr.contains("AC")){
                     partialResult = attr.split(" ");
@@ -755,7 +745,6 @@ public class PlayerCharacter {
                     this.time = Long.parseLong(partialResult[1]);
                 }
             }
-        }
     }
     public void updateAttributes(){
         //TODO needs to be implemented

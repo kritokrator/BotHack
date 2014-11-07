@@ -27,15 +27,9 @@ public class Nethack implements NethackInterface {
             "string")
             );
     static final ArrayList<String> outputResult = new ArrayList<String>(Arrays.asList(
-            "nhapi-yn-function",
-            "nhapi-update-inventory",
-            "nhapi-clear-map",
-            "nhapi-print-glyph",
-            "nhapi-create-menu",
-            "nhapi-menu-putstr",
-            "nhapi-display-menu",
-            "nhapi-message",
-            "nhapi-curs")
+            "nhapi-update-status",
+            "nhapi-print-glyph"
+            )
     );
     static final String[] statusMessages = {
             "You are",
@@ -62,19 +56,17 @@ public class Nethack implements NethackInterface {
     @Override
     public void play() throws NotYetImplementedException {
         String command;
-        if(theGame.isAlive()){
-            try {
-                while(input.ready()){
+        try {
+            while(theGame.isAlive()) {
                     readNethackLine();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        } catch (IOException e)
+        {
+               e.printStackTrace();
         }
-        else{
-            System.err.println("The nethack-process died while executing. Check up on this");
+        finally {
+            System.out.println("Nethack instance is no longer alive");
         }
-
     }
 
     @Override
@@ -124,7 +116,7 @@ public class Nethack implements NethackInterface {
         System.out.printf("enter a %s command: ", prompt);
         String input = keyboard.nextLine();
 
-        return input + "\r\n";
+        return input + "\n";
 
     }
     public void processNethackCommand(String output){
@@ -135,12 +127,19 @@ public class Nethack implements NethackInterface {
             if(output.contains("nhapi-print-glyph")){
                 theMap.update(output);
             }
+            else if(output.contains("nhapi-update-status")){
+                try {
+                    avatar.updateStatus(output);
+                } catch (PlayerUpdateStatusException e) {
+                    e.printStackTrace();
+                }
+            }
             else{
                 System.err.println("command is in progress");
             }
         }
         else{
-            System.err.println("the command has not been implemented yet");
+            //System.err.println("the command has not been implemented yet");
         }
     }
 }
