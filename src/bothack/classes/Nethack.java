@@ -53,6 +53,10 @@ public class Nethack implements NethackInterface {
         System.out.println("Hello, world!");
     }
 
+    public void setup(String role,String race,String gender,String alignment){
+
+    }
+
     @Override
     public void play() throws NotYetImplementedException {
         String command;

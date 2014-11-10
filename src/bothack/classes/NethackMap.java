@@ -2,12 +2,13 @@ package bothack.classes;
 
 import bothack.interfaces.NethackMapInterface;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 /**
  * Created by administrator on 10/22/14.
  */
-public class NethackMap implements NethackMapInterface {
+public class NethackMap implements NethackMapInterface, Serializable{
     private HashMap<Coordinate,Tile> level;
 
     public NethackMap(){

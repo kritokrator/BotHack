@@ -2,12 +2,13 @@ package bothack.classes;
 
 import com.sun.org.apache.xpath.internal.operations.Bool;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by krito on 10/29/14.
  */
-public class PlayerCharacter {
+public class PlayerCharacter implements Serializable {
 
     public PlayerCharacter(String alignment, String gender, String race, String role, Integer strength, Integer intelligence, Integer dexterity,
                            Integer wisdom, Integer condition, Integer charisma, Long gold, Long healthPoints, Long currentHealthPoints,
