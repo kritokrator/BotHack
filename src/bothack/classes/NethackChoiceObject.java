@@ -1,6 +1,9 @@
 package bothack.classes;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by administrator on 11/9/14.
@@ -8,7 +11,7 @@ import java.io.Serializable;
 public class NethackChoiceObject implements Serializable {
     private String text;
     private String choices;
-    private Integer auto;
+    private int auto;
 
     public NethackChoiceObject(){
         text="";
@@ -17,13 +20,31 @@ public class NethackChoiceObject implements Serializable {
     }
 
     public NethackChoiceObject(String input){
+        ArrayList<String> result = new ArrayList<String>();
         if(!input.contains("nhapi-yn-function")){
-            text="Wrong message in the Nethack interperer was used to create this Object. Check source";
+            text="Wrong message in the Nethack interpreter was used to create this Object. Check source";
             choices="";
             auto = -1;
         }
         else{
-            //placeholder for the substrings
+            Pattern p = Pattern.compile("(\"([^\"]|\\\\\")*\")|([0-9]+)");
+            Matcher m = p.matcher(input);
+            while(m.find()){
+                result.add(m.group());
+            }
+            //this should contain only three strings taken from the nhapi-yn-function ouput
+            //if it contains more then an error has occured
+            if((result.size() == 3)){
+                this.text = result.get(0);
+                this.choices = result.get(1);
+                this.auto = Integer.parseInt(result.get(2));
+            }
+            else{
+                System.err.println("Error occured the regexp used in the constructor returned more results than was expected");
+                text="Error occured the regexp used in the constructor returned more results than was expected";
+                choices="";
+                auto = -1;
+            }
 
 
         }
