@@ -124,10 +124,6 @@ public enum Command {
     //OPTIONS ("options"),                          // get all the nethack options
 
 
-
-
-
-
     private String description;
     private Command(String description){
         this.description = description;

@@ -9,14 +9,17 @@ import static java.lang.System.in;
  * Created by administrator on 10/21/14.
  */
 public class Nethack implements NethackInterface {
-    private Process theGame;            //main nethack process
-    private BufferedReader input;       //feedback sent from the game
-    private BufferedReader errors;      //self explanatory really
-    private BufferedWriter output;      //commands sent to nethack
-    private String terminal;            //placeholder for the feedback
-    private String terminalErrors;      //placeholder for the errors
-    private NethackMap theMap;          //this will contain the current level of the game
-    private PlayerCharacter avatar;     //this will represent the player character of the user
+    private Process theGame;                        //main nethack process
+    private BufferedReader input;                   //feedback sent from the game
+    private BufferedReader errors;                  //self explanatory really
+    private BufferedWriter output;                  //commands sent to nethack
+    private String terminal;                        //placeholder for the feedback
+    private String terminalErrors;                  //placeholder for the errors
+    private NethackMap theMap;                      //this will contain the current level of the game
+    private PlayerCharacter avatar;                 //this will represent the player character of the user
+    private boolean readyForUserInput;              // this will be set to true if nethack is read to accept a command
+    private ArrayList<Object> objectContainer;      // this will contain questions, inventory and other various objects
+    private NethackCommandObject lastCommandPrompt; // this will contain the last command prompt given by the NethackGame
 
     private static ArrayList<String> prompts = new ArrayList<String>(Arrays.asList(
             "command",
@@ -39,6 +42,7 @@ public class Nethack implements NethackInterface {
         try {
             theMap = new NethackMap();
             avatar = new PlayerCharacter();
+            objectContainer = new ArrayList<Object>();
             theGame = new ProcessBuilder("nethack-lisp").start();
             input = new BufferedReader(new InputStreamReader(theGame.getInputStream()));
             output = new BufferedWriter(new OutputStreamWriter(theGame.getOutputStream()));
@@ -54,6 +58,66 @@ public class Nethack implements NethackInterface {
     }
 
     public void setup(String role,String race,String gender,String alignment){
+        try {
+            processInputBoolean();
+            for(Object o : objectContainer){
+                if(o instanceof NethackChoiceObject){
+                    if(lastCommandPrompt.getPrompt().equals("number")){
+                        sendNethackCommand(new NethackChoice(110));
+                    }
+                    objectContainer.remove(o);
+                }
+            }
+            processInputBoolean();
+            for(Object o : objectContainer){
+                if(o instanceof NethackMenuObject){
+                    if(lastCommandPrompt.getPrompt().equals("menu")){
+                        sendNethackCommand(new NethackMenuChoice("pick-one",Integer.parseInt(role)));
+                    }
+                    objectContainer.remove(o);
+                }
+            }
+            processInputBoolean();
+            for(Object o : objectContainer){
+                if(o instanceof NethackMenuObject){
+                    if(lastCommandPrompt.getPrompt().equals("menu")){
+                        sendNethackCommand(new NethackMenuChoice("pick-one",Integer.parseInt(race)));
+                    }
+                    objectContainer.remove(o);
+                }
+            }
+            processInputBoolean();
+            for(Object o : objectContainer){
+                if(o instanceof NethackMenuObject){
+                    if(lastCommandPrompt.getPrompt().equals("menu")){
+                        sendNethackCommand(new NethackMenuChoice("pick-one",Integer.parseInt(gender)));
+                    }
+                    objectContainer.remove(o);
+                }
+            }
+            processInputBoolean();
+            for(Object o : objectContainer){
+                if(o instanceof NethackMenuObject){
+                    if(lastCommandPrompt.getPrompt().equals("menu")){
+                        sendNethackCommand(new NethackMenuChoice("pick-one",Integer.parseInt(gender)));
+                    }
+                    objectContainer.remove(o);
+                }
+            }
+            processInputBoolean();
+            for(Object o : objectContainer){
+                if(o instanceof NethackMenuObject){
+                    if(lastCommandPrompt.getPrompt().equals("menu")){
+                        sendNethackCommand(new NethackMenuChoice("pick-one",Integer.parseInt(alignment)));
+                    }
+                    objectContainer.remove(o);
+                }
+            }
+            processInputBoolean();
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
 
     }
 
@@ -108,6 +172,93 @@ public class Nethack implements NethackInterface {
             output.flush();
         }
     }
+    public Object readNethackLineObject() throws IOException{
+        int character;
+        String result = "";
+        character = input.read();
+        if (character == '('){
+            result += Character.toString((char)character);
+            result +=input.readLine();
+            //process command output
+            System.out.println(result);
+            return processNethackCommandObject(result);
+        }
+        else{
+            //the buffer contains an user prompt, the game is waiting for user input
+            result += Character.toString((char)character);
+            while(input.ready())
+            {
+                character = input.read();
+                result += Character.toString((char)character);
+            }
+            if(result.contains("dummy")){
+                sendNethackDummyCommand();
+                return null;
+            }
+            else {
+                readyForUserInput = true;
+                NethackCommandObject tmp = new NethackCommandObject(result);
+                lastCommandPrompt = tmp;
+                return tmp;
+            }
+        }
+    }
+    public Object processNethackCommandObject(String output){
+        String[] tmp = output.split(" ");                   // placeholder for the name of the command with the preceeding parenthesis
+        String command = tmp[0].substring(1);               // the actual command without the preceeding '(' and without other parameters
+        if(outputResult.contains(command)){
+            //process the command
+            if(output.contains("nhapi-print-glyph")){
+                theMap.update(output);
+                return null;
+            }
+            else if(output.contains("nhapi-update-status")){
+                try {
+                    avatar.updateStatus(output);
+                    return null;
+                } catch (PlayerUpdateStatusException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+            else if(output.contains("nhapi-yn-function")){
+                NethackChoiceObject result = new NethackChoiceObject(output);
+                objectContainer.add(result);
+                return null;
+            }
+            else if(output.contains("nhapi-start-menu")){
+                NethackMenuObject menu = new NethackMenuObject(output);
+                objectContainer.add(menu);
+                return null;
+            }
+            else if(output.contains("nhapi-add-menu") || output.contains("nhapi-end-menu")){
+                for(Object o : objectContainer){
+                    if(o instanceof NethackMenuObject){
+                        ((NethackMenuObject) o).parseInput(output);
+                    }
+                }
+                return null;
+            }
+            else if(output.contains("nhapi-select-menu")){
+                for(Object o : objectContainer){
+                    if(o instanceof NethackMenuObject){
+                        ((NethackMenuObject) o).parseInput(output);
+                        return (NethackMenuObject) o;
+                    }
+                }
+                return null;
+            }
+            else{
+                System.err.println("command is in progress");
+                return null;
+            }
+        }
+        else{
+            //System.err.println("the command has not been implemented yet");
+            return null;
+        }
+    }
+
 
     @Override
     public void quit() throws NotYetImplementedException {
@@ -146,4 +297,71 @@ public class Nethack implements NethackInterface {
             //System.err.println("the command has not been implemented yet");
         }
     }
+    public boolean sendNethackCommand(NethackChoice choice){
+        if(lastCommandPrompt.getPrompt().equals("number")){
+            try {
+                readyForUserInput = false;
+                this.output.write(choice.getChoice() + "\n");
+                this.output.flush();
+                return true;
+            }
+            catch(IOException e){
+                e.printStackTrace();
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+    public boolean sendNethackCommand(NethackMenuChoice choice) {
+        if (lastCommandPrompt.getPrompt().equals("menu")) {
+            try {
+                readyForUserInput = false;
+                this.output.write(choice.getMenu() + "\n");
+                this.output.flush();
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+        } else {
+            return false;
+
+        }
+    }
+    public void sendNethackCommand(Command c){
+        try{
+            readyForUserInput = false;
+            this.output.write(c.getDescription()+"\n");
+            this.output.flush();
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+
+
+    }
+    public void sendNethackDummyCommand() {
+        try {
+            readyForUserInput = false;
+            this.output.write("\n");
+            this.output.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public Object processInputObject() throws IOException{
+        Object result = null;
+        while(result == null){
+            result = readNethackLineObject();
+        }
+        return result;
+    }
+    public void processInputBoolean() throws  IOException{
+        while(!readyForUserInput){
+            readNethackLineObject();
+        }
+    }
+
 }
