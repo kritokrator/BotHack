@@ -10,6 +10,7 @@ public class Main {
             game.setup("118","104","109","99");
         }catch(Exception e){
             System.out.println(e);
+            e.printStackTrace();
         }
 
     }
