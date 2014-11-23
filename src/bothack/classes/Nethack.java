@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 
 import static java.lang.System.in;
+import static java.lang.System.out;
 
 /**
  * Created by administrator on 10/21/14.
@@ -31,7 +32,12 @@ public class Nethack implements NethackInterface {
             );
     static final ArrayList<String> outputResult = new ArrayList<String>(Arrays.asList(
             "nhapi-update-status",
-            "nhapi-print-glyph"
+            "nhapi-print-glyph",
+            "nhapi-yn-function",
+            "nhapi-start-menu",
+            "nhapi-add-menu",
+            "nhapi-select-menu",
+            "nhapi-end-menu"
             )
     );
     static final String[] statusMessages = {
@@ -57,7 +63,57 @@ public class Nethack implements NethackInterface {
         System.out.println("Hello, world!");
     }
 
-    public void setup(String role,String race,String gender,String alignment){
+
+    public void setup(String role,String race,String gender,String alignment) {
+        while(true){
+            try {
+                processInputBoolean();
+                if (lastCommandPrompt != null && lastCommandPrompt.getPrompt().contains("command")) {
+                    System.out.println("we're ready to play!");
+                    break;
+                }
+                if(objectContainer == null){
+                    throw new NullPointerException("objectContainer is a null pointer");
+                }
+                for (Iterator<Object> obj = objectContainer.iterator();obj.hasNext();) {
+                    
+                    Object o = obj.next();
+                    if (o instanceof NethackChoiceObject) {
+                        if (((NethackChoiceObject) o).getText().contains("game in progress")) {
+                            obj.remove();
+                            sendNethackCommand(new NethackChoice(121));
+                        }
+                        else if(((NethackChoiceObject) o).getText().contains("Shall I pick a character for you? [ynq]")){
+                            obj.remove();
+                            sendNethackCommand(new NethackChoice(110));
+                        }
+                    }
+                    else if( o instanceof NethackMenuObject){
+                        if(((NethackMenuObject) o).getCaption().contains("race")){
+                            obj.remove();
+                            sendNethackCommand(new NethackMenuChoice(((NethackMenuObject) o).getMethod(),Integer.parseInt(race)));
+                        }
+                        else if(((NethackMenuObject) o).getCaption().contains("role")){
+                            obj.remove();
+                            sendNethackCommand(new NethackMenuChoice(((NethackMenuObject) o).getMethod(),Integer.parseInt(role)));
+                        }
+                        else if(((NethackMenuObject) o).getCaption().contains("gender")){
+                            obj.remove();
+                            sendNethackCommand(new NethackMenuChoice(((NethackMenuObject) o).getMethod(),Integer.parseInt(gender)));
+                        }
+                        else if(((NethackMenuObject) o).getCaption().contains("alignment")){
+                            obj.remove();
+                            sendNethackCommand(new NethackMenuChoice(((NethackMenuObject) o).getMethod(),Integer.parseInt(alignment)));
+                        }
+                    }
+                }
+            }catch(IOException e){
+                e.printStackTrace();
+            }
+
+        }
+    }
+    /*public void setup(String role,String race,String gender,String alignment){
         try {
             processInputBoolean();
             for(Object o : objectContainer){
@@ -65,7 +121,7 @@ public class Nethack implements NethackInterface {
                     if(lastCommandPrompt.getPrompt().equals("number")){
                         sendNethackCommand(new NethackChoice(110));
                     }
-                    objectContainer.remove(o);
+                    obj.remove();
                 }
             }
             processInputBoolean();
@@ -74,7 +130,7 @@ public class Nethack implements NethackInterface {
                     if(lastCommandPrompt.getPrompt().equals("menu")){
                         sendNethackCommand(new NethackMenuChoice("pick-one",Integer.parseInt(role)));
                     }
-                    objectContainer.remove(o);
+                    obj.remove();
                 }
             }
             processInputBoolean();
@@ -83,7 +139,7 @@ public class Nethack implements NethackInterface {
                     if(lastCommandPrompt.getPrompt().equals("menu")){
                         sendNethackCommand(new NethackMenuChoice("pick-one",Integer.parseInt(race)));
                     }
-                    objectContainer.remove(o);
+                    obj.remove();
                 }
             }
             processInputBoolean();
@@ -92,7 +148,7 @@ public class Nethack implements NethackInterface {
                     if(lastCommandPrompt.getPrompt().equals("menu")){
                         sendNethackCommand(new NethackMenuChoice("pick-one",Integer.parseInt(gender)));
                     }
-                    objectContainer.remove(o);
+                    obj.remove();
                 }
             }
             processInputBoolean();
@@ -101,7 +157,7 @@ public class Nethack implements NethackInterface {
                     if(lastCommandPrompt.getPrompt().equals("menu")){
                         sendNethackCommand(new NethackMenuChoice("pick-one",Integer.parseInt(gender)));
                     }
-                    objectContainer.remove(o);
+                    obj.remove();
                 }
             }
             processInputBoolean();
@@ -110,7 +166,7 @@ public class Nethack implements NethackInterface {
                     if(lastCommandPrompt.getPrompt().equals("menu")){
                         sendNethackCommand(new NethackMenuChoice("pick-one",Integer.parseInt(alignment)));
                     }
-                    objectContainer.remove(o);
+                    obj.remove();
                 }
             }
             processInputBoolean();
@@ -119,7 +175,7 @@ public class Nethack implements NethackInterface {
             e.printStackTrace();
         }
 
-    }
+    }*/
 
     @Override
     public void play() throws NotYetImplementedException {
