@@ -9,9 +9,8 @@ import java.io.IOException;
  */
 public interface NethackInterface {
     public void setup()throws NotYetImplementedException;   //no args all default
-    public void play() throws NotYetImplementedException;   //no args play is interactive
     public void save() throws NotYetImplementedException;   //no args save current progress to the default location
     public void quit() throws NotYetImplementedException;   // exit the game, destroy everything
-    public void readNethackLine() throws IOException;
-    public String getUserInput(String prompt);              // get next command
+    public void action(Command c) throws NotYetImplementedException;
+    public void setup(String role,String race,String gender,String alignment);
 }

@@ -37,7 +37,8 @@ public class Nethack implements NethackInterface {
             "nhapi-start-menu",
             "nhapi-add-menu",
             "nhapi-select-menu",
-            "nhapi-end-menu"
+            "nhapi-end-menu",
+            "nhapi-exit-nhwindows"
             )
     );
     static final String[] statusMessages = {
@@ -63,7 +64,7 @@ public class Nethack implements NethackInterface {
         System.out.println("Hello, world!");
     }
 
-
+    @Override
     public void setup(String role,String race,String gender,String alignment) {
         while(true){
             try {
@@ -113,85 +114,7 @@ public class Nethack implements NethackInterface {
 
         }
     }
-    /*public void setup(String role,String race,String gender,String alignment){
-        try {
-            processInputBoolean();
-            for(Object o : objectContainer){
-                if(o instanceof NethackChoiceObject){
-                    if(lastCommandPrompt.getPrompt().equals("number")){
-                        sendNethackCommand(new NethackChoice(110));
-                    }
-                    obj.remove();
-                }
-            }
-            processInputBoolean();
-            for(Object o : objectContainer){
-                if(o instanceof NethackMenuObject){
-                    if(lastCommandPrompt.getPrompt().equals("menu")){
-                        sendNethackCommand(new NethackMenuChoice("pick-one",Integer.parseInt(role)));
-                    }
-                    obj.remove();
-                }
-            }
-            processInputBoolean();
-            for(Object o : objectContainer){
-                if(o instanceof NethackMenuObject){
-                    if(lastCommandPrompt.getPrompt().equals("menu")){
-                        sendNethackCommand(new NethackMenuChoice("pick-one",Integer.parseInt(race)));
-                    }
-                    obj.remove();
-                }
-            }
-            processInputBoolean();
-            for(Object o : objectContainer){
-                if(o instanceof NethackMenuObject){
-                    if(lastCommandPrompt.getPrompt().equals("menu")){
-                        sendNethackCommand(new NethackMenuChoice("pick-one",Integer.parseInt(gender)));
-                    }
-                    obj.remove();
-                }
-            }
-            processInputBoolean();
-            for(Object o : objectContainer){
-                if(o instanceof NethackMenuObject){
-                    if(lastCommandPrompt.getPrompt().equals("menu")){
-                        sendNethackCommand(new NethackMenuChoice("pick-one",Integer.parseInt(gender)));
-                    }
-                    obj.remove();
-                }
-            }
-            processInputBoolean();
-            for(Object o : objectContainer){
-                if(o instanceof NethackMenuObject){
-                    if(lastCommandPrompt.getPrompt().equals("menu")){
-                        sendNethackCommand(new NethackMenuChoice("pick-one",Integer.parseInt(alignment)));
-                    }
-                    obj.remove();
-                }
-            }
-            processInputBoolean();
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
 
-    }*/
-
-    @Override
-    public void play() throws NotYetImplementedException {
-        String command;
-        try {
-            while(theGame.isAlive()) {
-                    readNethackLine();
-                }
-        } catch (IOException e)
-        {
-               e.printStackTrace();
-        }
-        finally {
-            System.out.println("Nethack instance is no longer alive");
-        }
-    }
 
     @Override
     public void save() throws NotYetImplementedException {
@@ -200,8 +123,8 @@ public class Nethack implements NethackInterface {
 
     }
 
-    @Override
-    public void readNethackLine() throws IOException {
+  /*  @Override
+    private void readNethackLine() throws IOException {
         int character;
         boolean prompt = false;
         String result = "";
@@ -228,7 +151,8 @@ public class Nethack implements NethackInterface {
             output.flush();
         }
     }
-    public Object readNethackLineObject() throws IOException{
+*/
+    private Object readNethackLineObject() throws IOException{
         int character;
         String result = "";
         character = input.read();
@@ -239,7 +163,7 @@ public class Nethack implements NethackInterface {
             System.out.println(result);
             return processNethackCommandObject(result);
         }
-        else{
+        else if(character != -1){
             //the buffer contains an user prompt, the game is waiting for user input
             result += Character.toString((char)character);
             while(input.ready())
@@ -251,15 +175,19 @@ public class Nethack implements NethackInterface {
                 sendNethackDummyCommand();
                 return null;
             }
-            else {
+            else{
                 readyForUserInput = true;
                 NethackCommandObject tmp = new NethackCommandObject(result);
                 lastCommandPrompt = tmp;
                 return tmp;
             }
         }
+        else{
+            return null;
+        }
     }
-    public Object processNethackCommandObject(String output){
+
+    private Object processNethackCommandObject(String output){
         String[] tmp = output.split(" ");                   // placeholder for the name of the command with the preceeding parenthesis
         String command = tmp[0].substring(1);               // the actual command without the preceeding '(' and without other parameters
         if(outputResult.contains(command)){
@@ -304,6 +232,10 @@ public class Nethack implements NethackInterface {
                 }
                 return null;
             }
+            else if(output.contains("nhapi-exit-nhwindows")){
+                lastCommandPrompt = new NethackCommandObject("quit");
+                return null;
+            }
             else{
                 System.err.println("command is in progress");
                 return null;
@@ -315,14 +247,71 @@ public class Nethack implements NethackInterface {
         }
     }
 
-
     @Override
     public void quit() throws NotYetImplementedException {
         //TODO implement this
         throw new NotYetImplementedException();
     }
+
     @Override
-    public String getUserInput(String prompt){
+    public void action(Command c) throws NotYetImplementedException {
+        sendNethackCommand(c);
+        try {
+            processInputBoolean();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void quitFast(){
+        if(lastCommandPrompt.getPrompt().contains("command")){
+            sendNethackCommand(Command.QUIT);
+            while(true){
+                try
+                {
+                    processInputBoolean();
+                    if (lastCommandPrompt != null && lastCommandPrompt.getPrompt().contains("quit")) {
+                        System.out.println("game is shut down");
+                        break;
+                    }
+                    if(objectContainer == null){
+                        throw new NullPointerException("objectContainer is a null pointer");
+                    }
+                    for(Iterator<Object> obj = objectContainer.iterator();obj.hasNext();){
+                        Object o = obj.next();
+                        if(o instanceof NethackChoiceObject){
+                            if(((NethackChoiceObject) o).getText().contains("Really quit")){
+                                obj.remove();
+                                sendNethackCommand(new NethackChoice(121));
+                            }
+                            else if(((NethackChoiceObject) o).getText().contains("possessions identified")){
+                                obj.remove();
+                                sendNethackCommand(new NethackChoice(110));
+                            }
+                            else if(((NethackChoiceObject) o).getText().contains("attributes")){
+                                obj.remove();
+                                sendNethackCommand(new NethackChoice(110));
+                            }
+                            else if(((NethackChoiceObject) o).getText().contains("conduct")){
+                                obj.remove();
+                                sendNethackCommand(new NethackChoice(110));
+                            }
+                        }
+                    }
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
+        else{
+            System.out.println("Different command expected");
+        }
+    }
+
+    private String getUserInput(String prompt){
         Scanner keyboard = new Scanner(in);
         System.out.printf("enter a %s command: ", prompt);
         String input = keyboard.nextLine();
@@ -330,7 +319,8 @@ public class Nethack implements NethackInterface {
         return input + "\n";
 
     }
-    public void processNethackCommand(String output){
+
+    /*public void processNethackCommand(String output){
         String[] tmp = output.split(" ");                   // placeholder for the name of the command with the preceeding parenthesis
         String command = tmp[0].substring(1);               // the actual command without the preceeding '(' and without other parameters
         if(outputResult.contains(command)){
@@ -353,7 +343,8 @@ public class Nethack implements NethackInterface {
             //System.err.println("the command has not been implemented yet");
         }
     }
-    public boolean sendNethackCommand(NethackChoice choice){
+*/
+    private boolean sendNethackCommand(NethackChoice choice){
         if(lastCommandPrompt.getPrompt().equals("number")){
             try {
                 readyForUserInput = false;
@@ -370,7 +361,8 @@ public class Nethack implements NethackInterface {
             return false;
         }
     }
-    public boolean sendNethackCommand(NethackMenuChoice choice) {
+
+    private boolean sendNethackCommand(NethackMenuChoice choice) {
         if (lastCommandPrompt.getPrompt().equals("menu")) {
             try {
                 readyForUserInput = false;
@@ -386,7 +378,8 @@ public class Nethack implements NethackInterface {
 
         }
     }
-    public void sendNethackCommand(Command c){
+
+    private void sendNethackCommand(Command c){
         try{
             readyForUserInput = false;
             this.output.write(c.getDescription()+"\n");
@@ -398,7 +391,8 @@ public class Nethack implements NethackInterface {
 
 
     }
-    public void sendNethackDummyCommand() {
+
+    private void sendNethackDummyCommand() {
         try {
             readyForUserInput = false;
             this.output.write("\n");
@@ -407,14 +401,16 @@ public class Nethack implements NethackInterface {
             e.printStackTrace();
         }
     }
-    public Object processInputObject() throws IOException{
+
+    private Object processInputObject() throws IOException{
         Object result = null;
         while(result == null){
             result = readNethackLineObject();
         }
         return result;
     }
-    public void processInputBoolean() throws  IOException{
+
+    private void processInputBoolean() throws  IOException{
         while(!readyForUserInput){
             readNethackLineObject();
         }
