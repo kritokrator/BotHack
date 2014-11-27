@@ -2,13 +2,23 @@ package bothack.classes;
 
 import bothack.interfaces.Color;
 
+import javax.xml.bind.annotation.*;
+
 /**
  * Created by administrator on 10/29/14.
  */
+@XmlRootElement
 public class Tile {
     private Character symbol;
     private Color color;
     private Long glyph;
+
+    public Tile(){
+        //symbol ='!';
+        //color = Color.BLACK;
+        //glyph = new Long(-1);
+
+    }
 
     public Tile(Character symbol, Color color, Long glyph){
         this.symbol = symbol;
@@ -49,14 +59,25 @@ public class Tile {
     public void setGlyph(String s){
         glyph = Long.parseLong(s);
     }
+    @XmlTransient
     public Character getSymbol(){
         return symbol;
     }
+    @XmlElement
     public Color getColor(){
         return color;
     }
+    @XmlElement
     public Long getGlyph(){
         return glyph;
+    }
+    @XmlElement(name="symbol")
+    public String getSymbolAsString(){
+        return String.valueOf(symbol);
+    }
+
+    public void setSymbolAsString(String s){
+        symbol = s.charAt(0);
     }
 
     @Override

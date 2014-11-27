@@ -2,7 +2,7 @@ package bothack.classes;
 
 import bothack.interfaces.ActionInterface;
 import bothack.interfaces.Command;
-import javax.xml.bind.
+import javax.xml.bind.*;
 
 /**
  * Created by krito on 11/26/14.

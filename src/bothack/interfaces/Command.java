@@ -81,7 +81,7 @@ public enum Command {
     FIRE ("fire"),                                  // fire ammunition from quiver 'f'
     @XmlEnumValue("inv")
     INVENTORY("inv"),                               // show your inventory 'i'
-    @XmlEnum("typeinv")
+    @XmlEnumValue("typeinv")
     TYPE_INVENTORY("typeinv"),                      // inventory specific item types 'I'
     @XmlEnumValue("open")
     OPEN ("open"),                                  // open a door 'o'

@@ -416,4 +416,12 @@ public class Nethack implements NethackInterface {
         }
     }
 
+    public PlayerCharacter getAvatar(){
+        return avatar;
+    }
+
+    public NethackMap getTheMap(){
+        return  theMap;
+    }
+
 }

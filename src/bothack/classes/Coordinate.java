@@ -1,8 +1,11 @@
 package bothack.classes;
 
+import javax.xml.bind.annotation.*;
+
 /**
  * Created by administrator on 10/29/14.
  */
+@XmlRootElement
 public class Coordinate {
     @Override
     public boolean equals(Object o) {
@@ -31,15 +34,22 @@ public class Coordinate {
         this.x = x;
         this.y = y;
     }
+
+    public Coordinate(){
+        this.x = 0;
+        this.y = 0;
+    }
     public void setX(int x){
         this.x = x;
     }
     public void setY(int y){
         this.y = y;
     }
+    @XmlElement
     public int getX(){
         return this.x;
     }
+    @XmlElement
     public int getY(){
         return this.y;
     }

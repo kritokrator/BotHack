@@ -2,12 +2,15 @@ package bothack.classes;
 
 import com.sun.org.apache.xpath.internal.operations.Bool;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by krito on 10/29/14.
  */
+@XmlRootElement
 public class PlayerCharacter implements Serializable {
 
     public PlayerCharacter(String alignment, String gender, String race, String role, Integer strength, Integer intelligence, Integer dexterity,
@@ -50,7 +53,7 @@ public class PlayerCharacter implements Serializable {
         this.intelligence = intelligence;
 
     }
-
+    @XmlElement
     public String getAlignment() {
         return alignment;
     }
@@ -58,7 +61,7 @@ public class PlayerCharacter implements Serializable {
     public void setAlignment(String alignment) {
         this.alignment = alignment;
     }
-
+    @XmlElement
     public String getGender() {
         return gender;
     }
@@ -66,7 +69,7 @@ public class PlayerCharacter implements Serializable {
     public void setGender(String gender) {
         this.gender = gender;
     }
-
+    @XmlElement
     public String getRace() {
         return race;
     }
@@ -74,7 +77,7 @@ public class PlayerCharacter implements Serializable {
     public void setRace(String race) {
         this.race = race;
     }
-
+    @XmlElement
     public String getRole() {
         return role;
     }
@@ -82,7 +85,7 @@ public class PlayerCharacter implements Serializable {
     public void setRole(String role) {
         this.role = role;
     }
-
+    @XmlElement
     public Integer getStrength() {
         return strength;
     }
@@ -90,7 +93,7 @@ public class PlayerCharacter implements Serializable {
     public void setStrength(Integer strength) {
         this.strength = strength;
     }
-
+    @XmlElement
     public Integer getDexterity() {
         return dexterity;
     }
@@ -98,7 +101,7 @@ public class PlayerCharacter implements Serializable {
     public void setDexterity(Integer dexterity) {
         this.dexterity = dexterity;
     }
-
+    @XmlElement
     public Integer getWisdom() {
         return wisdom;
     }
@@ -106,7 +109,7 @@ public class PlayerCharacter implements Serializable {
     public void setWisdom(Integer wisdom) {
         this.wisdom = wisdom;
     }
-
+    @XmlElement
     public Integer getCondition() {
         return condition;
     }
@@ -114,7 +117,7 @@ public class PlayerCharacter implements Serializable {
     public void setCondition(Integer condition) {
         this.condition = condition;
     }
-
+    @XmlElement
     public Integer getCharisma() {
         return charisma;
     }
@@ -122,7 +125,7 @@ public class PlayerCharacter implements Serializable {
     public void setCharisma(Integer charisma) {
         this.charisma = charisma;
     }
-
+    @XmlElement
     public Long getGold() {
         return gold;
     }
@@ -130,7 +133,7 @@ public class PlayerCharacter implements Serializable {
     public void setGold(Long gold) {
         this.gold = gold;
     }
-
+    @XmlElement
     public Long getHealthPoints() {
         return healthPoints;
     }
@@ -138,7 +141,7 @@ public class PlayerCharacter implements Serializable {
     public void setHealthPoints(Long healthPoints) {
         this.healthPoints = healthPoints;
     }
-
+    @XmlElement
     public Long getCurrentHealthPoints() {
         return currentHealthPoints;
     }
@@ -146,7 +149,7 @@ public class PlayerCharacter implements Serializable {
     public void setCurrentHealthPoints(Long currentHealthPoints) {
         this.currentHealthPoints = currentHealthPoints;
     }
-
+    @XmlElement
     public Long getPower() {
         return power;
     }
@@ -154,7 +157,7 @@ public class PlayerCharacter implements Serializable {
     public void setPower(Long power) {
         this.power = power;
     }
-
+    @XmlElement
     public Long getCurrentPower() {
         return currentPower;
     }
@@ -162,7 +165,7 @@ public class PlayerCharacter implements Serializable {
     public void setCurrentPower(Long currentPower) {
         this.currentPower = currentPower;
     }
-
+    @XmlElement
     public Long getArmourClass() {
         return armourClass;
     }
@@ -170,7 +173,7 @@ public class PlayerCharacter implements Serializable {
     public void setArmourClass(Long armourClass) {
         this.armourClass = armourClass;
     }
-
+    @XmlElement
     public Long getExperiencePoints() {
         return experiencePoints;
     }
@@ -178,7 +181,7 @@ public class PlayerCharacter implements Serializable {
     public void setExperiencePoints(Long experiencePoints) {
         this.experiencePoints = experiencePoints;
     }
-
+    @XmlElement
     public String getRank() {
         return rank;
     }
@@ -186,7 +189,7 @@ public class PlayerCharacter implements Serializable {
     public void setRank(String rank) {
         this.rank = rank;
     }
-
+    @XmlElement
     public String getName() {
         return name;
     }
@@ -194,7 +197,7 @@ public class PlayerCharacter implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-
+    @XmlElement
     public String getDungeon() {
         return dungeon;
     }
@@ -202,7 +205,7 @@ public class PlayerCharacter implements Serializable {
     public void setDungeon(String dungeon) {
         this.dungeon = dungeon;
     }
-
+    @XmlElement
     public Integer getDungeonLevel() {
         return dungeonLevel;
     }
@@ -210,7 +213,7 @@ public class PlayerCharacter implements Serializable {
     public void setDungeonLevel(Integer dungeonLevel) {
         this.dungeonLevel = dungeonLevel;
     }
-
+    @XmlElement
     public Long getTime() {
         return time;
     }
@@ -218,7 +221,7 @@ public class PlayerCharacter implements Serializable {
     public void setTime(Long time) {
         this.time = time;
     }
-
+    @XmlElement
     public Integer getLevel() {
         return level;
     }
@@ -226,7 +229,7 @@ public class PlayerCharacter implements Serializable {
     public void setLevel(Integer level) {
         this.level = level;
     }
-
+    @XmlElement
     public Boolean getConfusion() {
         return confusion;
     }
@@ -234,7 +237,7 @@ public class PlayerCharacter implements Serializable {
     public void setConfusion(Boolean confusion) {
         this.confusion = confusion;
     }
-
+    @XmlElement
     public Boolean getHunger() {
         return hunger;
     }
@@ -242,7 +245,7 @@ public class PlayerCharacter implements Serializable {
     public void setHunger(Boolean hunger) {
         this.hunger = hunger;
     }
-
+    @XmlElement
     public Boolean getSick() {
         return sick;
     }
@@ -250,7 +253,7 @@ public class PlayerCharacter implements Serializable {
     public void setSick(Boolean sick) {
         this.sick = sick;
     }
-
+    @XmlElement
     public Boolean getBlind() {
         return blind;
     }
@@ -258,7 +261,7 @@ public class PlayerCharacter implements Serializable {
     public void setBlind(Boolean blind) {
         this.blind = blind;
     }
-
+    @XmlElement
     public Boolean getStunned() {
         return stunned;
     }
@@ -266,7 +269,7 @@ public class PlayerCharacter implements Serializable {
     public void setStunned(Boolean stunned) {
         this.stunned = stunned;
     }
-
+    @XmlElement
     public Boolean getHallucination() {
         return hallucination;
     }
@@ -274,7 +277,7 @@ public class PlayerCharacter implements Serializable {
     public void setHallucination(Boolean hallucination) {
         this.hallucination = hallucination;
     }
-
+    @XmlElement
     public Boolean getSlimed() {
         return slimed;
     }
@@ -282,7 +285,7 @@ public class PlayerCharacter implements Serializable {
     public void setSlimed(Boolean slimed) {
         this.slimed = slimed;
     }
-
+    @XmlElement
     public Boolean getEncumbrance() {
         return encumbrance;
     }
@@ -290,7 +293,7 @@ public class PlayerCharacter implements Serializable {
     public void setEncumbrance(Boolean encumbrance) {
         this.encumbrance = encumbrance;
     }
-
+    @XmlElement
     public Boolean getMonster() {
         return monster;
     }
@@ -298,7 +301,7 @@ public class PlayerCharacter implements Serializable {
     public void setMonster(Boolean monster) {
         this.monster = monster;
     }
-
+    @XmlElement
     public Boolean getHD() {
         return HD;
     }
@@ -306,7 +309,7 @@ public class PlayerCharacter implements Serializable {
     public void setHD(Boolean HD) {
         this.HD = HD;
     }
-
+    @XmlElement
     public Integer getIntelligence() {
         return intelligence;
     }

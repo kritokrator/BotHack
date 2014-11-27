@@ -2,13 +2,16 @@ package bothack.classes;
 
 import bothack.interfaces.NethackMapInterface;
 
+import javax.xml.bind.annotation.*;
 import java.io.Serializable;
 import java.util.HashMap;
 
 /**
  * Created by administrator on 10/22/14.
  */
+@XmlRootElement
 public class NethackMap implements NethackMapInterface, Serializable{
+
     private HashMap<Coordinate,Tile> level;
 
     public NethackMap(){
@@ -55,6 +58,7 @@ public class NethackMap implements NethackMapInterface, Serializable{
     }
 
     @Override
+    @XmlElement
     public HashMap<Coordinate, Tile> getMap() {
         return level;
     }
