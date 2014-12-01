@@ -14,9 +14,9 @@ public class Tile {
     private Long glyph;
 
     public Tile(){
-        //symbol ='!';
-        //color = Color.BLACK;
-        //glyph = new Long(-1);
+        symbol ='!';
+        color = Color.BLACK;
+        glyph = new Long(-1);
 
     }
 

@@ -1,7 +1,6 @@
 package bothack.agents;
 
-import bothack.agents.behaviours.MessageAcceptingBehaviour;
-import bothack.agents.behaviours.NethackRegisteringBehaviour;
+import bothack.agents.behaviours.NethackMessageAcceptingBehaviour;
 import bothack.classes.Nethack;
 import jade.core.Agent;
 import jade.domain.DFService;
@@ -28,7 +27,7 @@ public class NethackAgent extends Agent{
             System.out.println("NethackAgent: Prepping up the environment");
             game = new Nethack();
             registerNethack();
-            addBehaviour(new MessageAcceptingBehaviour());
+            addBehaviour(new NethackMessageAcceptingBehaviour());
         }
         catch(Exception e){
             e.printStackTrace();

@@ -1,10 +1,16 @@
 package bothack.classes;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**
  * Created by administrator on 11/10/14.
  */
+@XmlRootElement(name="item")
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class NethackMenuItem implements Serializable{
     private int menuId;                 //the id of the parent menu
     private long glyph;                 //currently unnecessary but better be safe than sorry
@@ -37,6 +43,7 @@ public class NethackMenuItem implements Serializable{
         this.preselected = preselected;
     }
 
+    @XmlElement
     public int getMenuId() {
         return menuId;
     }
@@ -45,6 +52,7 @@ public class NethackMenuItem implements Serializable{
         this.menuId = menuId;
     }
 
+    @XmlElement
     public long getGlyph() {
         return glyph;
     }
@@ -53,6 +61,7 @@ public class NethackMenuItem implements Serializable{
         this.glyph = glyph;
     }
 
+    @XmlElement
     public long getTile() {
         return tile;
     }
@@ -61,6 +70,7 @@ public class NethackMenuItem implements Serializable{
         this.tile = tile;
     }
 
+    @XmlElement
     public int getSymbol() {
         return symbol;
     }
@@ -69,6 +79,7 @@ public class NethackMenuItem implements Serializable{
         this.symbol = symbol;
     }
 
+    @XmlElement
     public int getGroupAcc() {
         return groupAcc;
     }
@@ -77,6 +88,7 @@ public class NethackMenuItem implements Serializable{
         this.groupAcc = groupAcc;
     }
 
+    @XmlElement
     public String getAttribute() {
         return attribute;
     }
@@ -85,6 +97,7 @@ public class NethackMenuItem implements Serializable{
         this.attribute = attribute;
     }
 
+    @XmlElement
     public String getDescription() {
         return description;
     }
@@ -93,6 +106,7 @@ public class NethackMenuItem implements Serializable{
         this.description = description;
     }
 
+    @XmlElement
     public boolean isPreselected() {
         return preselected;
     }

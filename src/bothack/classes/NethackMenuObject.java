@@ -1,10 +1,14 @@
 package bothack.classes;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@XmlRootElement
 public class NethackMenuObject implements Serializable {
     private int id;
     private String caption;
@@ -78,6 +82,9 @@ public class NethackMenuObject implements Serializable {
         NethackMenuItem tmp = new NethackMenuItem(menuId,glyph,tile,symbol,groupAcc,attribute,description,preselected);
         return this.items.add(tmp);
     }
+    public boolean addItem(NethackMenuItem item){
+        return this.items.add(item);
+    }
 
 
     public NethackMenuObject(int id) {
@@ -97,6 +104,7 @@ public class NethackMenuObject implements Serializable {
         this.items = new ArrayList<NethackMenuItem>();
     }
 
+    @XmlElement
     public int getId() {
         return id;
     }
@@ -105,6 +113,7 @@ public class NethackMenuObject implements Serializable {
         this.id = id;
     }
 
+    @XmlElement
     public String getCaption() {
         return caption;
     }
@@ -113,6 +122,7 @@ public class NethackMenuObject implements Serializable {
         this.caption = caption;
     }
 
+    @XmlElement
     public String getMethod() {
         return method;
     }
@@ -121,6 +131,8 @@ public class NethackMenuObject implements Serializable {
         this.method = method;
     }
 
+    @XmlElementWrapper(name = "items")
+    @XmlElement(name="item")
     public ArrayList<NethackMenuItem> getItems() {
         return items;
     }

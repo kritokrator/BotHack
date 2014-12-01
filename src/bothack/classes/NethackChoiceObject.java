@@ -1,5 +1,9 @@
 package bothack.classes;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -8,9 +12,14 @@ import java.util.regex.Pattern;
 /**
  * Created by administrator on 11/9/14.
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class NethackChoiceObject implements Serializable {
+    @XmlElement
     private String text;
+    @XmlElement
     private String choices;
+    @XmlElement
     private int auto;
 
     public NethackChoiceObject(){

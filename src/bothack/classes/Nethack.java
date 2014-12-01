@@ -123,35 +123,7 @@ public class Nethack implements NethackInterface {
 
     }
 
-  /*  @Override
-    private void readNethackLine() throws IOException {
-        int character;
-        boolean prompt = false;
-        String result = "";
-        character = input.read();
-        if(character == '(')
-        {
-            //the buffer contains an output of an command
-            result += Character.toString((char)character);
-            result +=input.readLine();
-            //process command output
-            System.out.println(result);
-            processNethackCommand(result);
-        }
-        else{
-            //the buffer contains an user prompt, the game is waiting for user input
-            result += Character.toString((char)character);
-            while(input.ready())
-            {
-                character = input.read();
-                result += Character.toString((char)character);
-            }
-            //process command prompt
-            output.write(getUserInput(result));
-            output.flush();
-        }
-    }
-*/
+
     private Object readNethackLineObject() throws IOException{
         int character;
         String result = "";
@@ -254,15 +226,106 @@ public class Nethack implements NethackInterface {
     }
 
     @Override
-    public void action(Command c) throws NotYetImplementedException {
+    public Object action(Command c){
         sendNethackCommand(c);
-        try {
+        try{
             processInputBoolean();
+            String prompt = lastCommandPrompt.getPrompt();
+            if( prompt.contains("command")){
+                return lastCommandPrompt;
+            }
+            else if(prompt.contains("menu")){
+                for(Iterator<Object> objectIterator = objectContainer.iterator();objectIterator.hasNext();){
+                    Object o = objectIterator.next();
+                    if(o instanceof NethackMenuObject){
+                        objectContainer.remove(o);
+                        return o;
+                    }
+                }
+            }
+            else if(prompt.contains("number")){
+                for(Iterator<Object> objectIterator = objectContainer.iterator();objectIterator.hasNext();){
+                    Object o = objectIterator.next();
+                    if(o instanceof NethackChoiceObject){
+                        objectContainer.remove(o);
+                        return o;
+                    }
+                }
+            }
         }
-        catch(Exception e)
-        {
+        catch(Exception e){
             e.printStackTrace();
         }
+        return null;
+    }
+
+    @Override
+    public Object action(NethackChoice nc){
+        sendNethackCommand(nc);
+        try{
+            processInputBoolean();
+            String prompt = lastCommandPrompt.getPrompt();
+            if( prompt.contains("command")){
+                return lastCommandPrompt;
+            }
+            else if(prompt.contains("menu")){
+                for(Iterator<Object> objectIterator = objectContainer.iterator();objectIterator.hasNext();){
+                    Object o = objectIterator.next();
+                    if(o instanceof NethackMenuObject){
+                        objectContainer.remove(o);
+                        return o;
+                    }
+                }
+            }
+            else if(prompt.contains("number")){
+                for(Iterator<Object> objectIterator = objectContainer.iterator();objectIterator.hasNext();){
+                    Object o = objectIterator.next();
+                    if(o instanceof NethackChoiceObject){
+                        objectContainer.remove(o);
+                        return o;
+                    }
+                }
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    @Override
+    public Object action(NethackMenuChoice nmc){
+        sendNethackCommand(nmc);
+        try{
+            processInputBoolean();
+            String prompt = lastCommandPrompt.getPrompt();
+            if( prompt.contains("command")){
+                return lastCommandPrompt;
+            }
+            else if(prompt.contains("menu")){
+                for(Iterator<Object> objectIterator = objectContainer.iterator();objectIterator.hasNext();){
+                    Object o = objectIterator.next();
+                    if(o instanceof NethackMenuObject){
+                        objectContainer.remove(o);
+                        return o;
+                    }
+                }
+            }
+            else if(prompt.contains("number")){
+                for(Iterator<Object> objectIterator = objectContainer.iterator();objectIterator.hasNext();){
+                    Object o = objectIterator.next();
+                    if(o instanceof NethackChoiceObject){
+                        objectContainer.remove(o);
+                        return o;
+                    }
+                }
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public void quitFast(){
@@ -320,30 +383,6 @@ public class Nethack implements NethackInterface {
 
     }
 
-    /*public void processNethackCommand(String output){
-        String[] tmp = output.split(" ");                   // placeholder for the name of the command with the preceeding parenthesis
-        String command = tmp[0].substring(1);               // the actual command without the preceeding '(' and without other parameters
-        if(outputResult.contains(command)){
-            //process the command
-            if(output.contains("nhapi-print-glyph")){
-                theMap.update(output);
-            }
-            else if(output.contains("nhapi-update-status")){
-                try {
-                    avatar.updateStatus(output);
-                } catch (PlayerUpdateStatusException e) {
-                    e.printStackTrace();
-                }
-            }
-            else{
-                System.err.println("command is in progress");
-            }
-        }
-        else{
-            //System.err.println("the command has not been implemented yet");
-        }
-    }
-*/
     private boolean sendNethackCommand(NethackChoice choice){
         if(lastCommandPrompt.getPrompt().equals("number")){
             try {
