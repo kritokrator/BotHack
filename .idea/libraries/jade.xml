@@ -3,6 +3,7 @@
     <CLASSES>
       <root url="jar://$USER_HOME$/jade/lib/jade.jar!/" />
       <root url="file://$USER_HOME$/jade/lib/commons-codec" />
+      <root url="jar://$USER_HOME$/jade/add-ons/security/lib/jadeSecurity.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

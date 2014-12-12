@@ -40,45 +40,31 @@ public class NethackMessageAcceptingBehaviour extends CyclicBehaviour {
                 Unmarshaller unmarshaller = context.createUnmarshaller();
                 if(myAgent instanceof NethackAgent){
                     System.out.println("NethackAgent : Request message received");
+                    String owner = msg.getSender().getName();
                     Object o = unmarshaller.unmarshal(new StringReader(msg.getContent()));
-                    if(o instanceof SetupMessage) {
-                        System.out.println("NethackAgent : Setup message received");
-                        ((NethackAgent) myAgent).getGame().setup("118", "104", "109", "99");
+                    if(o instanceof SetupMessage && !(((NethackAgent) myAgent).getDungeons().containsKey(owner))){
+                        NethackBehaviour nb = new NethackBehaviour(owner);
+                        myAgent.addBehaviour(nb);
+                        nb.setup((SetupMessage)o);
+                        ((NethackAgent) myAgent).getDungeons().putIfAbsent(owner,nb);
                     }
-                    else if(o instanceof QuitMessage){
-                        System.out.println("NethackAgent : Quit message received");
-                        ((NethackAgent) myAgent).getGame().quitFast();
+                    else if(o instanceof  SetupMessage && ((NethackAgent) myAgent).getDungeons().containsKey(owner)){
+                        NethackBehaviour nb = new NethackBehaviour(owner);
+                        myAgent.addBehaviour(nb);
+                        ((NethackAgent) myAgent).getDungeons().replace(owner,nb);
                     }
-                    else if(o instanceof RequestMessage){
-                        if(((RequestMessage) o).getMapUpdate()){
-                            System.out.println("NethackAgent : Map update not implemented");
-                            //prepare the message and return the object
+                    else if(((NethackAgent) myAgent).getDungeons().containsKey(owner)){
+                        NethackBehaviour nb = ((NethackAgent) myAgent).getDungeons().get(owner);
+                        if(o instanceof QuitMessage){
+                            nb.quit();
+                            nb.done();
+                            ((NethackAgent) myAgent).getDungeons().remove(owner);
                         }
-                        else if(((RequestMessage) o).getAvatarUpdate()){
-                            System.out.println("NethackAgent : player update not implemented");
-                            //prepare the message and return the object
-                        }
-                        else if(((RequestMessage) o).getAction() != null){
-                            System.out.println("NethackAgent : Action message received");
-                            Object returnValue =  ((NethackAgent) myAgent).getGame().action(((RequestMessage) o).getAction());
-                            //prepare the message and return the object
-                            myAgent.addBehaviour(new ObjectSendingBehaviour(msg.getSender(),returnValue));
-                        }
-                        else if(((RequestMessage) o).getChoice() != null){
-                            Object returnValue = ((NethackAgent) myAgent).getGame().action(((RequestMessage) o).getChoice());
-                            //prepare the message and return the object
-                            myAgent.addBehaviour(new ObjectSendingBehaviour(msg.getSender(),returnValue));
-                        }
-                        else if(((RequestMessage) o).getMenuChoice()!=null){
-                            Object returnValue = ((NethackAgent) myAgent).getGame().action(((RequestMessage) o).getMenuChoice());
-                            //prepare the message and return the object
-                            //add oneshot message Object sending behaviour
-                            myAgent.addBehaviour(new ObjectSendingBehaviour(msg.getSender(),returnValue));
-                        }
-                        else{
-                            System.out.println("NethackAgent : Request message with no action accepted");
+                        else if(o instanceof RequestMessage){
+                            nb.processMessage((RequestMessage)o);
                         }
                     }
+
                 }
             } catch (JAXBException e) {
                 e.printStackTrace();

@@ -4,6 +4,9 @@ import bothack.agents.behaviours.ObjectSendingBehaviour;
 import bothack.agents.messages.QuitMessage;
 import bothack.agents.messages.RequestMessage;
 import bothack.agents.messages.SetupMessage;
+import bothack.classes.Nethack;
+import bothack.classes.NethackChoice;
+import bothack.classes.NethackMenuChoice;
 import bothack.interfaces.Command;
 import jade.lang.acl.ACLMessage;
 
@@ -30,7 +33,10 @@ public class BotAgent extends JFrame implements ActionListener, Runnable{
     private JComboBox comboBox1;
     private JComboBox comboBox2;
     private JTextArea output;
+    private JScrollPane scroll;
     private bothack.agents.BotAgent agent;
+    String[] requestTypes = {"PlayerCharacter Update","MapUpdate","PerformAction","PerformChoice","PerformMenuChoice"};
+    String[] choiceTypes = {"Yes","No"};
 
     public BotAgent(bothack.agents.BotAgent a){
         agent = a;
@@ -78,6 +84,19 @@ public class BotAgent extends JFrame implements ActionListener, Runnable{
             public void itemStateChanged(ItemEvent e) {
                 String item = (String)e.getItem();
                 if(item.equals("PerformAction")){
+                    //comboBox2 = new JComboBox(requestTypes);
+                    comboBox2.removeAllItems();
+                    for(Command c : Command.values()){
+                        comboBox2.addItem(c);
+                    }
+                    comboBox2.setEnabled(true);
+                }
+                else if(item.equals("PerformChoice"))
+                {
+                    //comboBox2 = new JComboBox(choiceTypes);
+                    comboBox2.removeAllItems();
+                    comboBox2.addItem("Yes");
+                    comboBox2.addItem("No");
                     comboBox2.setEnabled(true);
                 }
                 else{
@@ -97,6 +116,7 @@ public class BotAgent extends JFrame implements ActionListener, Runnable{
                 Object content;
                 if(setupRadioButton.isSelected()){
                     content = new SetupMessage();
+                    ((SetupMessage) content).setRandom(true);
                     agent.addBehaviour(new ObjectSendingBehaviour(agent.getDungeon(),content, ACLMessage.REQUEST));
                 }
                 else if(quitRadioButton.isSelected()){
@@ -105,9 +125,24 @@ public class BotAgent extends JFrame implements ActionListener, Runnable{
                 }
                 else if(requestRadioButton.isSelected()) {
                     content = new RequestMessage();
-                    if (comboBox2.isEnabled()) {
+                    String tmp = (String)comboBox1.getSelectedItem();
+                    if (tmp.equals("PerformAction")) {
                         ((RequestMessage) content).setAction((Command) comboBox2.getSelectedItem());
                         agent.addBehaviour(new ObjectSendingBehaviour(agent.getDungeon(), content, ACLMessage.REQUEST));
+                    }
+                    else if(tmp.contains("PerformChoice")){
+                        RequestMessage choiceContent = new RequestMessage();
+                        NethackChoice choice = new NethackChoice();
+                        if(((String)comboBox2.getSelectedItem()).contains("Yes")){
+                            choice.setChoice(121);
+                        }
+                        else{
+                            choice.setChoice(110);
+                        }
+
+                        choiceContent.setChoice(choice);
+                        agent.addBehaviour(new ObjectSendingBehaviour(agent.getDungeon(), choiceContent, ACLMessage.REQUEST));
+
                     }
                     else{
                         System.out.println("BotAgent : no other messages implemented yet");
@@ -131,14 +166,14 @@ public class BotAgent extends JFrame implements ActionListener, Runnable{
     @Override
     public void run() {
         setContentPane(this.panel1);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         pack();
         setVisible(true);
     }
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
-        String[] requestTypes = {"PlayerCharacter Update","MapUpdate","PerformAction","PerformChoice","PerformMenuChoice"};
+
         comboBox1 = new JComboBox(requestTypes);
         comboBox2 = new JComboBox(Command.values());
         output = new JTextArea();
@@ -150,3 +185,4 @@ public class BotAgent extends JFrame implements ActionListener, Runnable{
         output.append(out +"\n");
     }
 }
+

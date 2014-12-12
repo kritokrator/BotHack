@@ -610,7 +610,12 @@ public class PlayerCharacter implements Serializable {
                 }
                 else if(attr.contains("Dungeon")){
                     partialResult = attr.split(" ");
-                    this.dungeon = partialResult[1];
+                    this.dungeon = "";
+                    for(int i = 1; i < partialResult.length;i++){
+                        this.dungeon += partialResult[i] +" ";
+                    }
+                    this.dungeon = this.dungeon.substring(0,this.dungeon.length());
+
                 }
                 else if(attr.contains("Dlvl")){
                     partialResult = attr.split(" ");
@@ -750,8 +755,22 @@ public class PlayerCharacter implements Serializable {
                 }
             }
     }
-    public void updateAttributes(){
-        //TODO needs to be implemented
+    public void updateGenderRoleRace(String input){
+        int firstIndex = input.indexOf("You are a ");
+        String attributes = input.substring(firstIndex + "You are a ".length(),input.length());
+        String[] attributesArray = attributes.split(" ");
+        if(input.contains("Cave") || input.contains("Priest") || input.contains("Valkyrie")) {
+            this.alignment = attributesArray[0];
+            this.gender = attributesArray[2].substring(0,attributesArray[2].length()-2);
+            this.race = attributesArray[1];
+            this.role = attributesArray[2].substring(0,attributesArray[2].length()-2);
+        }
+        else{
+            this.alignment = attributesArray[0];
+            this.gender = attributesArray[1];
+            this.race = attributesArray[2];
+            this.role = attributesArray[3].substring(0,attributesArray[3].length()-2);
+        }
     };
 
 }

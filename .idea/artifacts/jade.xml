@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact name="jade">
+    <output-path>$PROJECT_DIR$/out/artifacts/jade</output-path>
+    <root id="root">
+      <element id="library" level="project" name="jade" />
+    </root>
+  </artifact>
+</component>

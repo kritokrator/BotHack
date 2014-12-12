@@ -31,7 +31,13 @@ public class ObjectSendingBehaviour extends OneShotBehaviour{
         recipient = r;
         content = c;
         performative = p;
+        if(content == null){
+        }
+        if(content != null){
+        }
+
     }
+
 
 
     @Override

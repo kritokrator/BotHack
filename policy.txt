@@ -1,0 +1,26 @@
+grant {
+    permission java.security.AllPermission "file:/home/administrator/jade/lib/jade.jar";
+};
+
+grant  {
+    permission java.security.AllPermission "file:/home/administrator/jade/add-ons/security/lib/jadeSecurity.jar";
+};
+
+grant {
+	permission jade.security.PlatformPermission "platform-owner=alice", "create,kill";
+	permission jade.security.ContainerPermission "container-owner=alice", "create,kill";
+	permission jade.security.AgentPermission "", "create,kill,suspend,resume";
+	permission jade.security.AMSPermission   "agent-owner=alice", "register,deregister,modify";
+	permission jade.security.MessagePermission "", "send-to";
+	permission java.security.AllPermission;
+};
+
+
+
+grant {
+	permission jade.security.ContainerPermission "container-owner=bob", "create, kill";
+	permission jade.security.AgentPermission "agent-owner=bob,container-owner=bob,agent-name=bob", "create,kill";
+	permission jade.security.AgentPermission "agent-owner=bob", "kill,suspend,resume";
+	permission jade.security.AMSPermission   "agent-owner=bob", "register,deregister,modify";
+	permission jade.security.MessagePermission "", "send-to";
+};
