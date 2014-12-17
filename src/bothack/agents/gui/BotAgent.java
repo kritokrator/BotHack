@@ -120,7 +120,7 @@ public class BotAgent extends JFrame implements ActionListener, Runnable{
                     agent.addBehaviour(new ObjectSendingBehaviour(agent.getDungeon(),content, ACLMessage.REQUEST));
                 }
                 else if(quitRadioButton.isSelected()){
-                    content = new QuitMessage();
+                    content = new QuitMessage(agent);
                     agent.addBehaviour(new ObjectSendingBehaviour(agent.getDungeon(),content, ACLMessage.REQUEST));
                 }
                 else if(requestRadioButton.isSelected()) {

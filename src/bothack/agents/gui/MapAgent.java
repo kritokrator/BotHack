@@ -31,8 +31,6 @@ public class MapAgent extends JFrame implements Runnable{
         agent = a;
         playersGui = new HashMap<String, VisualInterfaceWrapper>();
 
-        output = new JTextArea();
-        tabbedPane1.add(output);
 
         exitButton.addActionListener(new ActionListener() {
 
@@ -46,8 +44,6 @@ public class MapAgent extends JFrame implements Runnable{
     public MapAgent(){
         playersGui = new HashMap<String, VisualInterfaceWrapper>();
 
-        output = new JTextArea();
-        tabbedPane1.add(output);
         exitButton.addActionListener(new ActionListener() {
 
             @Override
@@ -162,9 +158,7 @@ public class MapAgent extends JFrame implements Runnable{
     };
 
 
-    public void updatePanels(PropertyChangeEvent evt){
-        output.append("Panels updated");
-    }
+
 
     public void updatePlayers(HashMap<String,VisualInterfaceWrapper> newVal){
         HashMap<String,VisualInterfaceWrapper> oldVal = this.playersGui;
@@ -180,12 +174,24 @@ public class MapAgent extends JFrame implements Runnable{
         this.playersGui = (HashMap<String,VisualInterfaceWrapper>)newVal.clone();
 
         }
-
-
-
-    public void printOutput(String out){
-        output.append(out+"\n");
+    public void removePlayer(String owner){
+        int index = 0;
+        for(Component c : tabbedPane1.getComponents()){
+            if(c.getName().equals(owner)){
+                break;
+            }
+            index++;
+        }
+        tabbedPane1.removeTabAt(index);
+        playersGui.remove(owner);
+        newPlayersCount.setText(new Integer(playersGui.size()).toString());
     }
+
+
+
+   /* public void printOutput(String out){
+        output.append(out+"\n");
+    }*/
 
     public HashMap<String, VisualInterfaceWrapper> getPlayersGui() {
         return playersGui;

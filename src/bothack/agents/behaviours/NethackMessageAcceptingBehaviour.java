@@ -13,6 +13,7 @@ import bothack.classes.NethackMap;
 import bothack.classes.NotYetImplementedException;
 import bothack.classes.PlayerCharacter;
 import bothack.interfaces.Command;
+import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.*;
 
@@ -59,6 +60,10 @@ public class NethackMessageAcceptingBehaviour extends CyclicBehaviour {
                             nb.quit();
                             nb.done();
                             ((NethackAgent) myAgent).getDungeons().remove(owner);
+                            for(AID address : ((NethackAgent) myAgent).getGuis()){
+                                myAgent.addBehaviour(new ObjectSendingBehaviour(address,o));
+                            }
+
                         }
                         else if(o instanceof RequestMessage){
                             nb.processMessage((RequestMessage)o);

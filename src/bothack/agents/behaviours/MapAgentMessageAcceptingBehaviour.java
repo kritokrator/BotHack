@@ -1,6 +1,7 @@
 package bothack.agents.behaviours;
 
 import bothack.agents.MapAgent;
+import bothack.agents.messages.QuitMessage;
 import bothack.classes.VisualInterfaceWrapper;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -25,7 +26,7 @@ public class MapAgentMessageAcceptingBehaviour extends CyclicBehaviour{
                 if(msg.getPerformative() == ACLMessage.INFORM){
                     HashMap<String,VisualInterfaceWrapper> players =  ((MapAgent) myAgent).getPlayers();
                     try {
-                        JAXBContext context = JAXBContext.newInstance(VisualInterfaceWrapper.class);
+                        JAXBContext context = JAXBContext.newInstance(VisualInterfaceWrapper.class, QuitMessage.class);
                         Unmarshaller unmarshaller = context.createUnmarshaller();
                         StringReader reader = new StringReader(msg.getContent());
                         Object content = unmarshaller.unmarshal(reader);
@@ -39,6 +40,11 @@ public class MapAgentMessageAcceptingBehaviour extends CyclicBehaviour{
                             ((MapAgent) myAgent).setPlayers(players);
 
                             ((MapAgent) myAgent).getGui().updatePlayers(players);
+                        }
+                        else if(content instanceof QuitMessage){
+                            players.remove(((QuitMessage) content).getSender());
+                            ((MapAgent) myAgent).getGui().removePlayer(((QuitMessage) content).getSender());
+                            ((MapAgent) myAgent).setPlayers(players);
                         }
                         else{
                             System.err.println(myAgent.getName() + " wrong class received");
