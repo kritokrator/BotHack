@@ -4,24 +4,17 @@ import bothack.agents.NethackAgent;
 import bothack.agents.messages.QuitMessage;
 import bothack.agents.messages.RequestMessage;
 import bothack.agents.messages.SetupMessage;
-import bothack.classes.Nethack;
 
 import java.io.StringReader;
 import java.lang.*;
 
-import bothack.classes.NethackMap;
-import bothack.classes.NotYetImplementedException;
-import bothack.classes.PlayerCharacter;
-import bothack.interfaces.Command;
 import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.*;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import java.util.concurrent.CyclicBarrier;
 
 /**
  * Created by krito on 11/23/14.
@@ -60,7 +53,7 @@ public class NethackMessageAcceptingBehaviour extends CyclicBehaviour {
                             nb.quit();
                             nb.done();
                             ((NethackAgent) myAgent).getDungeons().remove(owner);
-                            for(AID address : ((NethackAgent) myAgent).getGuis()){
+                            for(AID address : ((NethackAgent) myAgent).getVisualAgents()){
                                 myAgent.addBehaviour(new ObjectSendingBehaviour(address,o));
                             }
 

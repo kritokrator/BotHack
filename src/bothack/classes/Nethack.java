@@ -1,10 +1,10 @@
 package bothack.classes;
 import bothack.interfaces.*;
+
 import java.io.*;
 import java.util.*;
 
 import static java.lang.System.in;
-import static java.lang.System.out;
 
 /**
  * Created by administrator on 10/21/14.
@@ -40,7 +40,9 @@ public class Nethack implements NethackInterface {
             "nhapi-select-menu",
             "nhapi-end-menu",
             "nhapi-exit-nhwindows",
-            "nhapi-message"
+            "nhapi-message",
+            "nhapi-menu-putstr",
+            "nhapi-display-menu"
     )
     );
     static final String[] statusMessages = {
@@ -105,7 +107,36 @@ public class Nethack implements NethackInterface {
             }
         }
     }
+    public void createNethackDeathObject(){
+        while(true) {
+            try {
+                processInputBoolean();
 
+            if (lastCommandPrompt.getPrompt().contains("menu")) {
+                sendNethackDummyCommand();
+            }
+            if(lastCommandPrompt.getPrompt().contains("quit")){
+                break;
+            }
+            for (Iterator<Object> obj = objectContainer.iterator(); obj.hasNext(); ) {
+                Object o = obj.hasNext();
+                if (o instanceof NethackChoiceObject) {
+                    obj.remove();
+                    sendNethackCommand(new NethackChoice(121));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        }
+        try {
+            theGame.getInputStream().close();
+            theGame.getOutputStream().close();
+            theGame.getErrorStream().close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     @Override
     public void setup(String role,String race,String gender,String alignment) {
         while(true){
@@ -134,19 +165,19 @@ public class Nethack implements NethackInterface {
                     else if( o instanceof NethackMenuObject){
                         if(((NethackMenuObject) o).getCaption().contains("race")){
                             obj.remove();
-                            sendNethackCommand(new NethackMenuChoice(((NethackMenuObject) o).getMethod(),Integer.parseInt(race)));
+                            sendNethackCommand(new NethackMenuChoice(Integer.parseInt(race)));
                         }
                         else if(((NethackMenuObject) o).getCaption().contains("role")){
                             obj.remove();
-                            sendNethackCommand(new NethackMenuChoice(((NethackMenuObject) o).getMethod(),Integer.parseInt(role)));
+                            sendNethackCommand(new NethackMenuChoice(Integer.parseInt(role)));
                         }
                         else if(((NethackMenuObject) o).getCaption().contains("gender")){
                             obj.remove();
-                            sendNethackCommand(new NethackMenuChoice(((NethackMenuObject) o).getMethod(),Integer.parseInt(gender)));
+                            sendNethackCommand(new NethackMenuChoice(Integer.parseInt(gender)));
                         }
                         else if(((NethackMenuObject) o).getCaption().contains("alignment")){
                             obj.remove();
-                            sendNethackCommand(new NethackMenuChoice(((NethackMenuObject) o).getMethod(),Integer.parseInt(alignment)));
+                            sendNethackCommand(new NethackMenuChoice(Integer.parseInt(alignment)));
                         }
                     }
                 }
@@ -288,6 +319,41 @@ public class Nethack implements NethackInterface {
                 avatar.updateGenderRoleRace(output);
                 return null;
             }
+            else if(output.contains("nhapi-menu-putstr")){
+                for(Object o : objectContainer){
+                    if(o instanceof NethackTextWindowObject){
+                        if(((NethackTextWindowObject) o).isActive()){
+                            ((NethackTextWindowObject) o).parseInput(output);
+                            return null;
+                        }
+                        else if(!((NethackTextWindowObject) o).isActive()){
+                            NethackTextWindowObject tmp1 = new NethackTextWindowObject();
+                            tmp1.parseInput(output);
+                            return null;
+                        }
+                    }
+                }
+                NethackTextWindowObject tmp2 = new NethackTextWindowObject();
+                tmp2.parseInput(output);
+                return null;
+            }
+            else if(output.contains("nhapi-display-menu")){
+                for(Object o : objectContainer){
+                    if(o instanceof NethackTextWindowObject && ((NethackTextWindowObject) o).isActive()){
+                        ((NethackTextWindowObject) o).setActive(false);
+                        return null;
+                    }
+                }
+            }
+            else if(output.contains("nhapi-message")){
+                if(output.contains("You die..")){
+                        lastCommandPrompt.setPrompt("dead");
+                }
+                NethackMessageObject tmpMessage = new NethackMessageObject();
+                tmpMessage.parseInput(output);
+                objectContainer.add(tmp);
+                return null;
+            }
             else{
                 System.err.println("command is in progress");
                 return null;
@@ -297,28 +363,82 @@ public class Nethack implements NethackInterface {
             //System.err.println("the command has not been implemented yet");
             return null;
         }
+        return null;
     }
 
     @Override
-    public void quit() throws NotYetImplementedException {
-        //TODO implement this
-        throw new NotYetImplementedException();
+    public void quit() {
+        if(lastCommandPrompt.getPrompt().contains("command")){
+            sendNethackCommand(Command.QUIT);
+            while(true){
+                try
+                {
+                    processInputBoolean();
+                    if (lastCommandPrompt != null && lastCommandPrompt.getPrompt().contains("quit")) {
+                        System.out.println("game is shut down");
+                        break;
+                    }
+                    if(objectContainer == null){
+                        throw new NullPointerException("objectContainer is a null pointer");
+                    }
+                    for(Iterator<Object> obj = objectContainer.iterator();obj.hasNext();){
+                        Object o = obj.next();
+                        if(o instanceof NethackChoiceObject){
+                            if(((NethackChoiceObject) o).getText().contains("Really quit")){
+                                obj.remove();
+                                sendNethackCommand(new NethackChoice(121));//yes
+                            }
+                            else if(((NethackChoiceObject) o).getText().contains("possessions identified")){
+                                obj.remove();
+                                sendNethackCommand(new NethackChoice(121));//yes
+                            }
+                            else if(((NethackChoiceObject) o).getText().contains("attributes")){
+                                obj.remove();
+                                sendNethackCommand(new NethackChoice(121));//yes
+                            }
+                            else if(((NethackChoiceObject) o).getText().contains("conduct")){
+                                obj.remove();
+                                sendNethackCommand(new NethackChoice(121));//yes
+                            }
+                        }
+                    }
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+            try {
+                theGame.getInputStream().close();
+                theGame.getOutputStream().close();
+                theGame.getErrorStream().close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else{
+            System.out.println("Different command expected");
+        }
     }
 
+
     @Override
-    public Object action(Command c){
-        sendNethackCommand(c);
+    public Object action(NethackStringObject s){
+        Error errCheck = checkInput(s);
+        if(errCheck != null){
+            return errCheck;
+        }
+        objectContainer.clear();
+        sendNethackCommand(s);
         try{
             processInputBoolean();
             String prompt = lastCommandPrompt.getPrompt();
-            if( prompt.contains("command")){
+            if( prompt.contains("command") || prompt.contains("direction") || prompt.contains("string")){
                 return lastCommandPrompt;
             }
             else if(prompt.contains("menu")){
                 for(Iterator<Object> objectIterator = objectContainer.iterator();objectIterator.hasNext();){
                     Object o = objectIterator.next();
                     if(o instanceof NethackMenuObject){
-                        objectContainer.remove(o);
                         return o;
                     }
                 }
@@ -327,13 +447,94 @@ public class Nethack implements NethackInterface {
                 for(Iterator<Object> objectIterator = objectContainer.iterator();objectIterator.hasNext();){
                     Object o = objectIterator.next();
                     if(o instanceof NethackChoiceObject){
-                        objectContainer.remove(o);
                         return o;
                     }
                 }
             }
-            else if(prompt.contains("quit")){
-                return null;
+            else if(prompt.contains("dead")){
+                createNethackDeathObject();
+                return new NethackDeathObject();
+
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+    @Override
+    public Object action(NethackDirectionObject d){
+        Error errCheck = checkInput(d);
+        if(errCheck != null){
+            return errCheck;
+        }
+        objectContainer.clear();
+        sendNethackCommand(d);
+        try{
+            processInputBoolean();
+            String prompt = lastCommandPrompt.getPrompt();
+            if( prompt.contains("command") || prompt.contains("direction") || prompt.contains("string")){
+                return lastCommandPrompt;
+            }
+            else if(prompt.contains("menu")){
+                for(Iterator<Object> objectIterator = objectContainer.iterator();objectIterator.hasNext();){
+                    Object o = objectIterator.next();
+                    if(o instanceof NethackMenuObject){
+                        return o;
+                    }
+                }
+            }
+            else if(prompt.contains("number")){
+                for(Iterator<Object> objectIterator = objectContainer.iterator();objectIterator.hasNext();){
+                    Object o = objectIterator.next();
+                    if(o instanceof NethackChoiceObject){
+                        return o;
+                    }
+                }
+            }
+            else if(prompt.contains("dead")){
+                createNethackDeathObject();
+                return new NethackDeathObject();
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+    @Override
+    public Object action(Command c){
+        Error errCheck = checkInput(c);
+        if(errCheck != null){
+            return errCheck;
+        }
+        objectContainer.clear();
+        sendNethackCommand(c);
+        try{
+            processInputBoolean();
+            String prompt = lastCommandPrompt.getPrompt();
+            if( prompt.contains("command") || prompt.contains("direction") || prompt.contains("string")){
+                return lastCommandPrompt;
+            }
+            else if(prompt.contains("menu")){
+                for(Iterator<Object> objectIterator = objectContainer.iterator();objectIterator.hasNext();){
+                    Object o = objectIterator.next();
+                    if(o instanceof NethackMenuObject){
+                        return o;
+                    }
+                }
+            }
+            else if(prompt.contains("number")){
+                for(Iterator<Object> objectIterator = objectContainer.iterator();objectIterator.hasNext();){
+                    Object o = objectIterator.next();
+                    if(o instanceof NethackChoiceObject){
+                        return o;
+                    }
+                }
+            }
+            else if(prompt.contains("dead")){
+                createNethackDeathObject();
+                return new NethackDeathObject();
             }
         }
         catch(Exception e){
@@ -344,18 +545,22 @@ public class Nethack implements NethackInterface {
 
     @Override
     public Object action(NethackChoice nc){
+        Error errCheck = checkInput(nc);
+        if(errCheck != null){
+            return errCheck;
+        }
+        objectContainer.clear();
         sendNethackCommand(nc);
         try{
             processInputBoolean();
             String prompt = lastCommandPrompt.getPrompt();
-            if( prompt.contains("command")){
+            if( prompt.contains("command") || prompt.contains("direction") || prompt.contains("string")){
                 return lastCommandPrompt;
             }
             else if(prompt.contains("menu")){
                 for(Iterator<Object> objectIterator = objectContainer.iterator();objectIterator.hasNext();){
                     Object o = objectIterator.next();
                     if(o instanceof NethackMenuObject){
-                        objectContainer.remove(o);
                         return o;
                     }
                 }
@@ -364,10 +569,13 @@ public class Nethack implements NethackInterface {
                 for(Iterator<Object> objectIterator = objectContainer.iterator();objectIterator.hasNext();){
                     Object o = objectIterator.next();
                     if(o instanceof NethackChoiceObject){
-                        objectContainer.remove(o);
                         return o;
                     }
                 }
+            }
+            else if(prompt.contains("dead")){
+                createNethackDeathObject();
+                return new NethackDeathObject();
             }
         }
         catch(Exception e){
@@ -379,18 +587,22 @@ public class Nethack implements NethackInterface {
 
     @Override
     public Object action(NethackMenuChoice nmc){
+        Error errCheck = checkInput(nmc);
+        if(errCheck != null){
+            return errCheck;
+        }
+        objectContainer.clear();
         sendNethackCommand(nmc);
         try{
             processInputBoolean();
             String prompt = lastCommandPrompt.getPrompt();
-            if( prompt.contains("command")){
+            if( prompt.contains("command") || prompt.contains("direction") || prompt.contains("string")){
                 return lastCommandPrompt;
             }
             else if(prompt.contains("menu")){
                 for(Iterator<Object> objectIterator = objectContainer.iterator();objectIterator.hasNext();){
                     Object o = objectIterator.next();
                     if(o instanceof NethackMenuObject){
-                        objectContainer.remove(o);
                         return o;
                     }
                 }
@@ -399,10 +611,13 @@ public class Nethack implements NethackInterface {
                 for(Iterator<Object> objectIterator = objectContainer.iterator();objectIterator.hasNext();){
                     Object o = objectIterator.next();
                     if(o instanceof NethackChoiceObject){
-                        objectContainer.remove(o);
                         return o;
                     }
                 }
+            }
+            else if(prompt.contains("dead")){
+                createNethackDeathObject();
+                return new NethackDeathObject();
             }
         }
         catch(Exception e){
@@ -430,19 +645,19 @@ public class Nethack implements NethackInterface {
                         if(o instanceof NethackChoiceObject){
                             if(((NethackChoiceObject) o).getText().contains("Really quit")){
                                 obj.remove();
-                                sendNethackCommand(new NethackChoice(121));
+                                sendNethackCommand(new NethackChoice(121));//yes
                             }
                             else if(((NethackChoiceObject) o).getText().contains("possessions identified")){
                                 obj.remove();
-                                sendNethackCommand(new NethackChoice(110));
+                                sendNethackCommand(new NethackChoice(110));//no
                             }
                             else if(((NethackChoiceObject) o).getText().contains("attributes")){
                                 obj.remove();
-                                sendNethackCommand(new NethackChoice(110));
+                                sendNethackCommand(new NethackChoice(110));//no
                             }
                             else if(((NethackChoiceObject) o).getText().contains("conduct")){
                                 obj.remove();
-                                sendNethackCommand(new NethackChoice(110));
+                                sendNethackCommand(new NethackChoice(110));//no
                             }
                         }
                     }
@@ -530,6 +745,24 @@ public class Nethack implements NethackInterface {
             e.printStackTrace();
         }
     }
+    private void sendNethackCommand(NethackDirectionObject d){
+        try {
+            readyForUserInput = false;
+            this.output.write(d.getDirection()+"\n");
+            this.output.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private void sendNethackCommand(NethackStringObject s){
+        try {
+            readyForUserInput = false;
+            this.output.write(s.getText()+"\n");
+            this.output.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     private Object processInputObject() throws IOException{
         Object result = null;
@@ -543,6 +776,83 @@ public class Nethack implements NethackInterface {
         while(!readyForUserInput){
             readNethackLineObject();
         }
+    }
+
+    private Error checkInput(Object input){
+        //checks whether the next input sent to nethack-lisp is valid
+        //otherwise there might be a segmentation fault
+        //consider moving this to a separate class
+        if((input instanceof Command) && !lastCommandPrompt.getPrompt().equals("command")){
+            return new Error(40+lastCommandPrompt.getCode(),"Wrong input type. Received: "+ Command.class.getName() + ", expected: "+ lastCommandPrompt.getPrompt());
+        }
+        if(input instanceof NethackChoice){
+            if(!lastCommandPrompt.getPrompt().equals("number")) {
+                return new Error(40 + lastCommandPrompt.getCode(), "Wrong input type. Received: " + NethackChoice.class.getName() + ", expected: " + lastCommandPrompt.getPrompt());
+            }
+            else{
+                return checkNethackChoice((NethackChoice)input);
+            }
+        }
+        if(input instanceof NethackMenuChoice){
+            if(!lastCommandPrompt.getPrompt().equals("menu")) {
+                return new Error(40 + lastCommandPrompt.getCode(), "Wrong input type. Received: " + NethackMenuChoice.class.getName() + ", expected: " + lastCommandPrompt.getPrompt());
+            }
+            else{
+                return checkNethackMenuChoice((NethackMenuChoice)input);
+            }
+        }
+        if((input instanceof NethackDirectionObject) && !lastCommandPrompt.getPrompt().equals("direction")){
+            return new Error(40+lastCommandPrompt.getCode(),"Wrong input type. Received: "+ NethackDirectionObject.class.getName() + ", expected: "+ lastCommandPrompt.getPrompt());
+        }
+        if((input instanceof NethackStringObject) && !lastCommandPrompt.getPrompt().equals("string")){
+            return new Error(40+lastCommandPrompt.getCode(),"Wrong input type. Received: "+ NethackDirectionObject.class.getName() + ", expected: "+ lastCommandPrompt.getPrompt());
+        }
+
+        return null;
+    }
+
+    private Error checkNethackChoice(NethackChoice input){
+        for(Object o : objectContainer){
+            if( o instanceof  NethackChoiceObject) {
+                if (((NethackChoiceObject) o).getChoices().indexOf((char) input.getChoice()) == -1) {
+                    return new Error(61, "Choice not present among the options. Received : " + input.getChoice() + ". Expected one of: " + ((NethackChoiceObject) o).getChoices());
+                }
+                //a choice object was found, returning from the method
+                return null;
+            }
+        }
+        //all objects were checked, no NethackChoiceObject was found
+        return new Error(62, "Choice not present among the options. No NethackChoiceObject were found");
+    }
+
+    private Error checkNethackMenuChoice(NethackMenuChoice input){
+        boolean optionFound = false;
+        //states whether the option was found at all
+        for(Object o : objectContainer){
+            if(o instanceof NethackMenuObject){
+                for(MenuOption mo : input.getChoices()){
+                    optionFound = false;
+                    for(NethackMenuItem nmi : ((NethackMenuObject) o).getItems()){
+                        if(mo.getChoice() == nmi.getSymbol()){
+                            if(mo.getCategory() != nmi.getGroupAcc()){
+                                return new Error(83,"Wrong group category was provided. Received: " +mo.getCategory() +". Expected: " + nmi.getGroupAcc());
+                            }
+                            //the item was found and has the correct category
+                            optionFound = true;
+                            break;
+                        }
+                    }
+                    if(!optionFound){
+                        return new Error(84,"Choice not present among the options. NethackMenuObject was found, the selected option, was not");
+                    }
+
+                }
+                //every option was found so return null
+                return null;
+            }
+        }
+        //all objects were checked, no NethackMenuObject was found
+        return new Error(82, "Choice not present among the options. No NethackMenuObject were found");
     }
 
     public boolean isUpdate() {

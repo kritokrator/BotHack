@@ -1,7 +1,6 @@
 package bothack.agents.behaviours;
 
 import bothack.agents.NethackAgent;
-import bothack.classes.Nethack;
 import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -22,16 +21,16 @@ public class visualSubscribersAcceptingBehaviour extends CyclicBehaviour {
                 String content = msg.getContent();
                 if (content.equals("subscribe")) {
                     System.out.println(myAgent.getName() + " received SUBSCRIBE message from" + msg.getSender().getName());
-                    ArrayList<AID> guis = ((NethackAgent) myAgent).getGuis();
+                    ArrayList<AID> guis = ((NethackAgent) myAgent).getVisualAgents();
                     guis.add(msg.getSender());
-                    ((NethackAgent) myAgent).setGuis(guis);
+                    ((NethackAgent) myAgent).setVisualAgents(guis);
                     for(NethackBehaviour nb : ((NethackAgent) myAgent).getDungeons().values()){
                         myAgent.addBehaviour(new visualizationUpdateBehaviour(nb.getOwner(),nb.getDungeon().getAvatar(),nb.getDungeon().getTheMap()));
                     }
                 } else if (content.equals("unsubscribe")) {
-                    ArrayList<AID> guis = ((NethackAgent) myAgent).getGuis();
+                    ArrayList<AID> guis = ((NethackAgent) myAgent).getVisualAgents();
                     guis.remove(msg.getSender());
-                    ((NethackAgent) myAgent).setGuis(guis);
+                    ((NethackAgent) myAgent).setVisualAgents(guis);
 
                 } else {
                     ACLMessage reply = new ACLMessage(ACLMessage.REFUSE);
