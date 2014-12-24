@@ -2,12 +2,10 @@ package bothack.agents;
 
 import bothack.agents.behaviours.JadeMessageAcceptingBehaviour;
 import bothack.agents.behaviours.SocketMessageAcceptingBehaviour;
-import bothack.classes.CookieManager;
+import bothack.agents.authentication.CookieManager;
 import jade.core.Agent;
-import jade.core.AgentContainer;
 import jade.core.NotFoundException;
 import jade.core.behaviours.ThreadedBehaviourFactory;
-import jade.wrapper.AgentController;
 
 import java.io.IOException;
 import java.net.ServerSocket;

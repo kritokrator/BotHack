@@ -40,7 +40,7 @@ public class JadeRequestProcessingBehaviour extends OneShotBehaviour{
         AID dungeonAddress = new AID(dungeon,AID.ISLOCALNAME);
         mt = MessageTemplate.and(MessageTemplate.MatchSender(dungeonAddress), MessageTemplate.MatchPerformative(ACLMessage.ACCEPT_PROPOSAL));
         cookie = ((LoginAgent)myAgent).getCookieManager().getCookie();
-        Object[] args = {cookie,dungeon};
+        Object[] args = {cookie,dungeon,myAgent.getLocalName()};
         //start the dungeon
         try {
             myAgent.getContainerController().createNewAgent(dungeon,"bothack.agents.NethackAgent",args).start();

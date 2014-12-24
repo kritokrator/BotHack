@@ -1,4 +1,4 @@
-package bothack.classes;
+package bothack.agents.authentication;
 
 import java.util.Random;
 
