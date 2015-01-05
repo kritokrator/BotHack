@@ -27,7 +27,7 @@ public class visualizationUpdateBehaviour extends OneShotBehaviour {
         if(myAgent instanceof NethackAgent){
             try{
                 ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-                for(AID address : ((NethackAgent) myAgent).getVisualAgents()){
+                for(AID address : ((NethackAgent) myAgent).getVisualizers()){
                     msg.addReceiver(address);
                 }
                 JAXBContext context = JAXBContext.newInstance(VisualInterfaceWrapper.class);

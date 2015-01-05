@@ -22,6 +22,7 @@ public class SocketMessageAcceptingBehaviour extends CyclicBehaviour {
         try {
             while(true){
                 myAgent.addBehaviour(requestProcessingFactory.wrap(new SocketRequestProcessingBehaviour(serverSocket.accept())));
+                System.out.println(myAgent.getLocalName() + " : SocketRequestProcessingBehaviour added ");
             }
 
         }catch (IOException e) {

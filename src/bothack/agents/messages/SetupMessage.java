@@ -21,6 +21,8 @@ public class SetupMessage {
     private String gender;
     @XmlElement
     private String alignment;
+    @XmlElement
+    private String cookie;
 
     public SetupMessage(String role, String race, String gender, String alignment) {
         this.random = false;
@@ -72,5 +74,13 @@ public class SetupMessage {
 
     public void setAlignment(String alignment) {
         this.alignment = alignment;
+    }
+
+    public String getCookie() {
+        return cookie;
+    }
+
+    public void setCookie(String cookie) {
+        this.cookie = cookie;
     }
 }

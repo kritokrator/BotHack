@@ -2,6 +2,7 @@ package bothack.agents.behaviours;
 
 import bothack.agents.LoginAgent;
 import bothack.agents.authentication.TestCallbackHandler;
+import bothack.agents.messages.ErrorMessage;
 import bothack.agents.messages.LoginMessage;
 import bothack.classes.*;
 import jade.core.AID;
@@ -21,6 +22,7 @@ import javax.xml.bind.Unmarshaller;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.Error;
+import java.net.Socket;
 
 /**
  * Created by administrator on 12/22/14.
@@ -33,7 +35,7 @@ public class JadeRequestProcessingBehaviour extends OneShotBehaviour{
         this.request = request;
     }
 
-    public Object startNewDungeon(String name){
+    public void startNewDungeon(String name,AID requestJade, Socket requestSocket){
         String dungeon = "dungeon_"+name;
         String cookie = "";
         Integer portNumber =0;
@@ -41,12 +43,15 @@ public class JadeRequestProcessingBehaviour extends OneShotBehaviour{
         mt = MessageTemplate.and(MessageTemplate.MatchSender(dungeonAddress), MessageTemplate.MatchPerformative(ACLMessage.ACCEPT_PROPOSAL));
         cookie = ((LoginAgent)myAgent).getCookieManager().getCookie();
         Object[] args = {cookie,dungeon,myAgent.getLocalName()};
+        QueueElement queueElement = new QueueElement("address",dungeon,requestJade,requestSocket);
+        ((LoginAgent) myAgent).addToQueue(queueElement);
         //start the dungeon
         try {
             myAgent.getContainerController().createNewAgent(dungeon,"bothack.agents.NethackAgent",args).start();
         } catch (StaleProxyException e) {
             e.printStackTrace();
         }
+        /*bothack.classes.Error error = new bothack.classes.Error(128,"Unable to connect with the dungeon");
         //wait for the port number
         ACLMessage msg = myAgent.receive(mt);
         if(msg != null){
@@ -56,33 +61,37 @@ public class JadeRequestProcessingBehaviour extends OneShotBehaviour{
                     return (Address)o;
                 }
                 else if(o instanceof Error){
-                    return (Error)o;
+                    error = (bothack.classes.Error)o;
                 }
             } catch (UnreadableException e) {
                 e.printStackTrace();
             }
         }
-        return new bothack.classes.Error(128,"Unable to connect with the dungeon");
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setError(error);
+        return errorMessage;*/
     }
     @Override
     public void action() {
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(LoginMessage.class, Address.class, bothack.classes.Error.class);
+            JAXBContext jaxbContext = JAXBContext.newInstance(LoginMessage.class, Address.class, bothack.classes.Error.class, ErrorMessage.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             Marshaller marshaller = jaxbContext.createMarshaller();
             StringWriter writer = new StringWriter();
             StringReader reader = new StringReader(request.getContent());
             Object o = unmarshaller.unmarshal(reader);
             if(o instanceof LoginMessage){
-                String name = "admin";//((LoginMessage) o).getName();
-                String password = "admin1";((LoginMessage) o).getPassword();
+                System.out.println(myAgent.getName() + " : processing a login request form : " + request.getSender().getName());
+                String name = ((LoginMessage) o).getName();
+                String password = ((LoginMessage) o).getPassword();
                 LoginContext lc = new LoginContext("Test", new TestCallbackHandler(name,password));
                 lc.login();
-                marshaller.marshal(startNewDungeon(name), writer);
-                ACLMessage reply = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
+                startNewDungeon(name,request.getSender(),null);
+              /*  ACLMessage reply = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
                 reply.addReceiver(request.getSender());
                 reply.setContent(writer.toString());
-                myAgent.send(reply);
+                myAgent.send(reply);*/
+                System.out.println(myAgent.getName() + " : finished processing a login request form : " + request.getSender().getName());
             }
             else{
                 bothack.classes.Error err = new bothack.classes.Error(126,"Message not recognized");
@@ -98,11 +107,13 @@ public class JadeRequestProcessingBehaviour extends OneShotBehaviour{
             e.printStackTrace();
             if(e instanceof FailedLoginException){
                 bothack.classes.Error err = new bothack.classes.Error(127,"Failed login exception");
+                ErrorMessage errorMessage = new ErrorMessage();
+                errorMessage.setError(err);
                 try {
-                    JAXBContext jaxbContext = JAXBContext.newInstance(bothack.classes.Error.class);
+                    JAXBContext jaxbContext = JAXBContext.newInstance(bothack.classes.Error.class,ErrorMessage.class);
                     Marshaller m = jaxbContext.createMarshaller();
                     StringWriter writer = new StringWriter();
-                    m.marshal(err,writer);
+                    m.marshal(errorMessage,writer);
                     ACLMessage reply = new ACLMessage(ACLMessage.REJECT_PROPOSAL);
                     reply.addReceiver(request.getSender());
                     reply.setContent(writer.toString());

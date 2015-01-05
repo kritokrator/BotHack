@@ -24,27 +24,17 @@ public class MapAgentMessageAcceptingBehaviour extends CyclicBehaviour{
         if(msg != null){
             if(myAgent instanceof MapAgent){
                 if(msg.getPerformative() == ACLMessage.INFORM){
-                    HashMap<String,VisualInterfaceWrapper> players =  ((MapAgent) myAgent).getPlayers();
                     try {
                         JAXBContext context = JAXBContext.newInstance(VisualInterfaceWrapper.class, QuitMessage.class);
                         Unmarshaller unmarshaller = context.createUnmarshaller();
                         StringReader reader = new StringReader(msg.getContent());
                         Object content = unmarshaller.unmarshal(reader);
                         if(content instanceof VisualInterfaceWrapper){
-                            if(players.containsKey(((VisualInterfaceWrapper) content).getOwner())){
-                                players.replace(((VisualInterfaceWrapper) content).getOwner(),(VisualInterfaceWrapper)content);
-                            }
-                            else {
-                                players.put(((VisualInterfaceWrapper) content).getOwner(),(VisualInterfaceWrapper)content);
-                            }
-                            ((MapAgent) myAgent).setPlayers(players);
-
-                            ((MapAgent) myAgent).getGui().updatePlayers(players);
+                            //((MapAgent) myAgent).getGui().updatePlayers(players);
+                            ((MapAgent) myAgent).getGui().updatePlayer(((VisualInterfaceWrapper) content).getOwner(),(VisualInterfaceWrapper)content);
                         }
                         else if(content instanceof QuitMessage){
-                            players.remove(((QuitMessage) content).getSender());
                             ((MapAgent) myAgent).getGui().removePlayer(((QuitMessage) content).getSender());
-                            ((MapAgent) myAgent).setPlayers(players);
                         }
                         else{
                             System.err.println(myAgent.getName() + " wrong class received");

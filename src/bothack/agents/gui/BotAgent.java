@@ -1,17 +1,15 @@
 package bothack.agents.gui;
 
+import bothack.agents.LoginAgent;
 import bothack.agents.behaviours.ObjectSendingBehaviour;
-import bothack.agents.messages.QuitMessage;
-import bothack.agents.messages.RequestMessage;
-import bothack.agents.messages.SetupMessage;
-import bothack.classes.Nethack;
-import bothack.classes.NethackChoice;
-import bothack.classes.NethackMenuChoice;
+import bothack.agents.messages.*;
+import bothack.classes.*;
 import bothack.interfaces.Command;
 import jade.lang.acl.ACLMessage;
 
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -26,16 +24,22 @@ public class BotAgent extends JFrame implements ActionListener, Runnable{
     private JToolBar toolBar1;
     private JButton exitButton;
     private JButton sendButton;
-    private JLabel agentNameLabel;
     private JRadioButton setupRadioButton;
     private JRadioButton quitRadioButton;
-    private JRadioButton requestRadioButton;
+    private JRadioButton interactRadioButton;
     private JComboBox comboBox1;
     private JComboBox comboBox2;
+    private String cookie;
     private JTextArea output;
     private JScrollPane scroll;
+    private JButton loginButton;
+    private JTextField login;
+    private JTextArea password;
+    private JTextField textField;
+    private JButton addOptionButton;
     private bothack.agents.BotAgent agent;
-    String[] requestTypes = {"PlayerCharacter Update","MapUpdate","PerformAction","PerformChoice","PerformMenuChoice"};
+    private NethackMenuChoice menuChoice= null;
+    String[] requestTypes = {"PlayerCharacter Update","MapUpdate","Action","Choice","Menu","Direction","Text"};
     String[] choiceTypes = {"Yes","No"};
 
     public BotAgent(bothack.agents.BotAgent a){
@@ -46,23 +50,23 @@ public class BotAgent extends JFrame implements ActionListener, Runnable{
                 if(quitRadioButton.isSelected() && setupRadioButton.isSelected()){
                     quitRadioButton.setSelected(false);
                 }
-                else if(requestRadioButton.isSelected() && setupRadioButton.isSelected()){
-                    requestRadioButton.setSelected(false);
+                else if(interactRadioButton.isSelected() && setupRadioButton.isSelected()){
+                    interactRadioButton.setSelected(false);
                     comboBox1.setEnabled(false);
                 }
             }
         });
 
-        requestRadioButton.addActionListener(new ActionListener() {
+        interactRadioButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(quitRadioButton.isSelected() && requestRadioButton.isSelected()){
+                if(quitRadioButton.isSelected() && interactRadioButton.isSelected()){
                     quitRadioButton.setSelected(false);
                 }
-                else if(requestRadioButton.isSelected() && setupRadioButton.isSelected()){
+                else if(interactRadioButton.isSelected() && setupRadioButton.isSelected()){
                     setupRadioButton.setSelected(false);
                 }
-                if(requestRadioButton.isSelected()){
+                if(interactRadioButton.isSelected()){
                     comboBox1.setEnabled(true);
                 }
             }
@@ -70,8 +74,8 @@ public class BotAgent extends JFrame implements ActionListener, Runnable{
         quitRadioButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(quitRadioButton.isSelected() && requestRadioButton.isSelected()){
-                    requestRadioButton.setSelected(false);
+                if(quitRadioButton.isSelected() && interactRadioButton.isSelected()){
+                    interactRadioButton.setSelected(false);
                     comboBox1.setEnabled(false);
                 }
                 else if(quitRadioButton.isSelected() && setupRadioButton.isSelected()){
@@ -83,7 +87,7 @@ public class BotAgent extends JFrame implements ActionListener, Runnable{
             @Override
             public void itemStateChanged(ItemEvent e) {
                 String item = (String)e.getItem();
-                if(item.equals("PerformAction")){
+                if(item.equals("Action")){
                     //comboBox2 = new JComboBox(requestTypes);
                     comboBox2.removeAllItems();
                     for(Command c : Command.values()){
@@ -91,13 +95,49 @@ public class BotAgent extends JFrame implements ActionListener, Runnable{
                     }
                     comboBox2.setEnabled(true);
                 }
-                else if(item.equals("PerformChoice"))
+                else if(item.equals("Choice"))
                 {
                     //comboBox2 = new JComboBox(choiceTypes);
                     comboBox2.removeAllItems();
-                    comboBox2.addItem("Yes");
-                    comboBox2.addItem("No");
+                    try{
+                        String choices = agent.getChoice().getChoices();
+                        for(int i =0; i <choices.length();i++){
+                            comboBox2.addItem(choices.charAt(i));
+                        }
+                        comboBox2.setEnabled(true);
+                    }
+                    catch (NullPointerException e1){
+                        JOptionPane.showMessageDialog(panel1,e1.getMessage());
+                    }
+                }
+                else if(item.equals("Direction")){
+                    comboBox2.removeAllItems();
+                    comboBox2.addItem("n");
+                    comboBox2.addItem("ne");
+                    comboBox2.addItem("e");
+                    comboBox2.addItem("se");
+                    comboBox2.addItem("s");
+                    comboBox2.addItem("sw");
+                    comboBox2.addItem("w");
+                    comboBox2.addItem("nw");
                     comboBox2.setEnabled(true);
+                }
+                else if(item.equals("Menu")){
+                    comboBox2.removeAllItems();
+                    try {
+                        NethackMenuObject menu = agent.getMenu();
+                        for(NethackMenuItem menuItem : menu.getItems()){
+                            comboBox2.addItem(menuItem.getDescription());
+                        }
+                        comboBox2.setEnabled(true);
+                    } catch (NullPointerException e1) {
+                        e1.printStackTrace();
+                        JOptionPane.showMessageDialog(panel1,e1.getMessage());
+                    }
+                }
+                else if(item.equals("Text")){
+                    textField.setEnabled(true);
+                    comboBox2.setEnabled(false);
                 }
                 else{
                     comboBox2.setEnabled(false);
@@ -113,36 +153,53 @@ public class BotAgent extends JFrame implements ActionListener, Runnable{
         sendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Object content;
+                InteractMessage interactMessage = new InteractMessage();
+                interactMessage.setCookie(agent.getCookie());
                 if(setupRadioButton.isSelected()){
-                    content = new SetupMessage();
-                    ((SetupMessage) content).setRandom(true);
-                    agent.addBehaviour(new ObjectSendingBehaviour(agent.getDungeon(),content, ACLMessage.REQUEST));
+                    SetupMessage content = new SetupMessage();
+                    content.setRandom(true);
+                    content.setCookie(agent.getCookie());
+                    agent.addBehaviour(new ObjectSendingBehaviour(null,agent.getDungeon(),content, ACLMessage.REQUEST));
                 }
                 else if(quitRadioButton.isSelected()){
-                    content = new QuitMessage(agent);
-                    agent.addBehaviour(new ObjectSendingBehaviour(agent.getDungeon(),content, ACLMessage.REQUEST));
+                    QuitMessage content = new QuitMessage(agent);
+                    content.setCookie(agent.getCookie());
+                    agent.addBehaviour(new ObjectSendingBehaviour(null,agent.getDungeon(),content, ACLMessage.REQUEST));
                 }
-                else if(requestRadioButton.isSelected()) {
-                    content = new RequestMessage();
+                else if(interactRadioButton.isSelected()) {
                     String tmp = (String)comboBox1.getSelectedItem();
-                    if (tmp.equals("PerformAction")) {
-                        ((RequestMessage) content).setAction((Command) comboBox2.getSelectedItem());
-                        agent.addBehaviour(new ObjectSendingBehaviour(agent.getDungeon(), content, ACLMessage.REQUEST));
+                    if (tmp.equals("Action")) {
+                        interactMessage.setAction((Command) comboBox2.getSelectedItem());
+                        agent.addBehaviour(new ObjectSendingBehaviour(null,agent.getDungeon(), interactMessage, ACLMessage.REQUEST));
                     }
-                    else if(tmp.contains("PerformChoice")){
-                        RequestMessage choiceContent = new RequestMessage();
+                    else if(tmp.contains("Choice")){
                         NethackChoice choice = new NethackChoice();
-                        if(((String)comboBox2.getSelectedItem()).contains("Yes")){
-                            choice.setChoice(121);
-                        }
-                        else{
-                            choice.setChoice(110);
-                        }
+                        choice.setChoice((Character)comboBox2.getSelectedItem());
+                        interactMessage.setChoice(choice);
+                        agent.addBehaviour(new ObjectSendingBehaviour(null,agent.getDungeon(), interactMessage, ACLMessage.REQUEST));
 
-                        choiceContent.setChoice(choice);
-                        agent.addBehaviour(new ObjectSendingBehaviour(agent.getDungeon(), choiceContent, ACLMessage.REQUEST));
+                    }
+                    else if(tmp.contains("Menu")){
+                        if(menuChoice == null){
+                            JOptionPane.showMessageDialog(panel1,"No options chosen");
+                            return;
+                        }
+                        interactMessage.setMenuOption(menuChoice);
+                        agent.addBehaviour(new ObjectSendingBehaviour(null,agent.getDungeon(), interactMessage, ACLMessage.REQUEST));
+                        menuChoice = null;
+                    }
+                    else if(tmp.contains(("Direction"))){
+                        NethackDirectionObject nethackDirectionObject= new NethackDirectionObject();
+                        nethackDirectionObject.setDirection((String)comboBox2.getSelectedItem());
+                        interactMessage.setDirection(nethackDirectionObject);
+                        agent.addBehaviour(new ObjectSendingBehaviour(null,agent.getDungeon(), interactMessage, ACLMessage.REQUEST));
 
+                    }
+                    else if(tmp.contains("Text")){
+                        NethackStringObject text = new NethackStringObject();
+                        text.setText((String)comboBox2.getSelectedItem());
+                        interactMessage.setText(text);
+                        agent.addBehaviour(new ObjectSendingBehaviour(null,agent.getDungeon(), interactMessage, ACLMessage.REQUEST));
                     }
                     else{
                         System.out.println("BotAgent : no other messages implemented yet");
@@ -156,6 +213,45 @@ public class BotAgent extends JFrame implements ActionListener, Runnable{
                 }
             }
         });
+        loginButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(login.getText().isEmpty()){
+                    JOptionPane.showMessageDialog(panel1,"login needs to be not empty");
+                }
+                else if(password.getText().isEmpty()){
+                    JOptionPane.showMessageDialog(panel1,"password needs to be not empty");
+                }
+                else{
+                    LoginMessage loginMessage = new LoginMessage();
+                    loginMessage.setName(login.getText());
+                    loginMessage.setPassword(password.getText());
+                    agent.addBehaviour(new ObjectSendingBehaviour(null,agent.getGuardian(),loginMessage,ACLMessage.REQUEST));
+                }
+            }
+        });
+        addOptionButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(comboBox1.getSelectedItem().equals("Menu")){
+                    if(menuChoice == null){
+                        menuChoice = new NethackMenuChoice();
+                    }
+                    MenuOption option = new MenuOption();
+                    String description = (String)comboBox2.getSelectedItem();
+                    for(NethackMenuItem item : agent.getMenu().getItems()){
+                    if(item.getDescription().equals(description)){
+                        option.setCategory(item.getGroupAcc());
+                        option.setChoice(item.getSymbol());
+                        }
+                    }
+                    menuChoice.getChoices().add(option);
+                }
+                else{
+                    JOptionPane.showMessageDialog(panel1,"Select a menu option");
+                }
+            }
+        });
     }
 
     @Override
@@ -166,7 +262,7 @@ public class BotAgent extends JFrame implements ActionListener, Runnable{
     @Override
     public void run() {
         setContentPane(this.panel1);
-        //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         pack();
         setVisible(true);
     }

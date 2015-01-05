@@ -1,0 +1,14 @@
+Error(0,"Success");
+Error(41,"Wrong input type. Received: "+ Command.class.getName() + ", expected: "+ lastCommandPrompt.getPrompt());
+Error(46,"Wrong input type. Received: "+ Command.class.getName() + ", expected: "+ lastCommandPrompt.getPrompt());
+Error(61, "Choice not present among the options. Received : " + input.getChoice() + ". Expected one of: " + ((NethackChoiceObject) o).getChoices());
+Error(62, "Choice not present among the options. No NethackChoiceObject were found");
+Error(82, "Choice not present among the options. No NethackMenuObject were found");
+Error(83,"Wrong group category was provided. Received: " +mo.getCategory() +". Expected: " + nmi.getGroupAcc());
+Error(84,"Choice not present among the options. NethackMenuObject was found, the selected option, was not");
+Error(126,"Message not recognized");
+Error(127,"Failed login exception");
+Error(129,"NethackAgent received an incorrect cookie");
+Error(140,"Password Incorrect");
+Error(141,"User not found");
+Error(142,"SqlException : \n" + e.getMessage());

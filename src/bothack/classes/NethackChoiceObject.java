@@ -45,7 +45,7 @@ public class NethackChoiceObject implements Serializable {
             //if it contains more then an error has occured
             if((result.size() == 3)){
                 this.text = result.get(0);
-                this.choices = result.get(1);
+                this.choices = result.get(1).substring(1,result.get(1).length()-1);
                 this.auto = Integer.parseInt(result.get(2));
             }
             else{
@@ -54,8 +54,33 @@ public class NethackChoiceObject implements Serializable {
                 choices="";
                 auto = -1;
             }
-
-
+            if(choices.length() == 0){
+                String partial = null;
+                choices ="";
+                Pattern p2 = Pattern.compile("\\[(\\$)?([a-z]+-?)*");
+                Matcher m2 = p2.matcher(input);
+                while(m2.find()){
+                    partial = m2.group();
+                }
+                if(partial == null){
+                    choices ="?*";
+                }
+                else{
+                    char c = partial.charAt(1);
+                    for(int i = 1; i < partial.length();i++){
+                        if(partial.charAt(i) != '-'){
+                            choices+=partial.charAt(i);
+                            c = partial.charAt(i);
+                        }
+                        else{
+                            while(++c != partial.charAt(i+1)){
+                                choices+=c;
+                            }
+                        }
+                    }
+                    choices += "?*";
+                }
+            }
         }
     }
 
