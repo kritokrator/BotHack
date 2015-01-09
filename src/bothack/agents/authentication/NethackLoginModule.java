@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * Created by administrator on 12/22/14.
  */
-public class TestLoginModule implements LoginModule{
+public class NethackLoginModule implements LoginModule{
     private Subject subject;
     private CallbackHandler callbackHandler;
     private Map sharedState;
@@ -29,7 +29,7 @@ public class TestLoginModule implements LoginModule{
 
     private boolean succeeded = false;
 
-    public TestLoginModule() {
+    public NethackLoginModule() {
 
     }
 

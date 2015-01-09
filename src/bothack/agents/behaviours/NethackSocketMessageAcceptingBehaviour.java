@@ -45,6 +45,7 @@ public class NethackSocketMessageAcceptingBehaviour extends CyclicBehaviour {
             Unmarshaller unmarshaller = context.createUnmarshaller();
             Object message = unmarshaller.unmarshal(stringReader);
             if(myAgent instanceof NethackAgent){
+                ((NethackAgent) myAgent).setLastMessageAccepted(System.currentTimeMillis());
                 System.out.println("NethackAgent : Request message received");
                 if(message instanceof SetupMessage ){
                     if(((NethackAgent) myAgent).cookieChecker(((SetupMessage) message).getCookie(),requestSocket,null))

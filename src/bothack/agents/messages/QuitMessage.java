@@ -18,7 +18,7 @@ public class QuitMessage {
         sender = "";
     }
     public  QuitMessage(Agent owner){
-        sender = owner.getName();
+        sender = owner.getLocalName();
     }
 
     @XmlElement

@@ -1,15 +1,15 @@
 package bothack.agents.behaviours;
 
 import bothack.agents.LoginAgent;
-import bothack.agents.authentication.TestCallbackHandler;
+import bothack.agents.authentication.NethackCallbackHandler;
 import bothack.agents.messages.ErrorMessage;
 import bothack.agents.messages.LoginMessage;
 import bothack.classes.*;
+import bothack.classes.Error;
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.lang.acl.UnreadableException;
 import jade.wrapper.StaleProxyException;
 
 import javax.security.auth.login.FailedLoginException;
@@ -21,7 +21,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.lang.Error;
 import java.net.Socket;
 
 /**
@@ -35,7 +34,7 @@ public class JadeRequestProcessingBehaviour extends OneShotBehaviour{
         this.request = request;
     }
 
-    public void startNewDungeon(String name,AID requestJade, Socket requestSocket){
+    public bothack.classes.Error startNewDungeon(String name,AID requestJade, Socket requestSocket){
         String dungeon = "dungeon_"+name;
         String cookie = "";
         Integer portNumber =0;
@@ -50,6 +49,7 @@ public class JadeRequestProcessingBehaviour extends OneShotBehaviour{
             myAgent.getContainerController().createNewAgent(dungeon,"bothack.agents.NethackAgent",args).start();
         } catch (StaleProxyException e) {
             e.printStackTrace();
+            return new bothack.classes.Error(145,"Failed to create new agent");
         }
         /*bothack.classes.Error error = new bothack.classes.Error(128,"Unable to connect with the dungeon");
         //wait for the port number
@@ -70,6 +70,7 @@ public class JadeRequestProcessingBehaviour extends OneShotBehaviour{
         ErrorMessage errorMessage = new ErrorMessage();
         errorMessage.setError(error);
         return errorMessage;*/
+        return null;
     }
     @Override
     public void action() {
@@ -84,9 +85,17 @@ public class JadeRequestProcessingBehaviour extends OneShotBehaviour{
                 System.out.println(myAgent.getName() + " : processing a login request form : " + request.getSender().getName());
                 String name = ((LoginMessage) o).getName();
                 String password = ((LoginMessage) o).getPassword();
-                LoginContext lc = new LoginContext("Test", new TestCallbackHandler(name,password));
+                LoginContext lc = new LoginContext("Test", new NethackCallbackHandler(name,password));
                 lc.login();
-                startNewDungeon(name,request.getSender(),null);
+                bothack.classes.Error err = startNewDungeon(name,request.getSender(),null);
+                if(err != null ){
+                    marshaller.marshal(err, writer);
+                    ACLMessage reply = new ACLMessage(ACLMessage.REJECT_PROPOSAL);
+                    reply.addReceiver(request.getSender());
+                    reply.setContent(writer.toString());
+                    myAgent.send(reply);
+                    return;
+                }
               /*  ACLMessage reply = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
                 reply.addReceiver(request.getSender());
                 reply.setContent(writer.toString());

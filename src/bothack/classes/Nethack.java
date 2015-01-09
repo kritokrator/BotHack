@@ -652,7 +652,7 @@ public class Nethack implements NethackInterface {
         return false;
     }
 
-    public void quitFast(){
+    public void quitFast() throws Exception{
         if(lastCommandPrompt.getPrompt().contains("command")){
             sendNethackCommand(Command.QUIT);
             while(true){

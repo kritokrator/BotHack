@@ -234,8 +234,12 @@ public class MapAgent extends JFrame implements Runnable{
 
         }*/
     public void removePlayer(String owner){
-        int index = 0;
-        for(Component c : tabbedPane1.getComponents()){
+        int index = tabbedPane1.indexOfTab(owner);
+        if(index != -1){
+            tabbedPane1.removeTabAt(index);
+        }
+
+        /*for(Component c : tabbedPane1.getComponents()){
             if(c.getName().equals(owner)){
                 break;
             }
@@ -243,7 +247,7 @@ public class MapAgent extends JFrame implements Runnable{
         }
         tabbedPane1.removeTabAt(index);
         playersGui.remove(owner);
-        newPlayersCount.setText(new Integer(playersGui.size()).toString());
+        newPlayersCount.setText(new Integer(playersGui.size()).toString());*/
     }
 
     public void updatePlayer(String dungeon, VisualInterfaceWrapper data){

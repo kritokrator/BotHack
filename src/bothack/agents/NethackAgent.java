@@ -1,9 +1,6 @@
 package bothack.agents;
 
-import bothack.agents.behaviours.NethackBehaviour;
-import bothack.agents.behaviours.NethackJadeMessageAcceptingBehaviour;
-import bothack.agents.behaviours.NethackSocketMessageAcceptingBehaviour;
-import bothack.agents.behaviours.ObjectSendingBehaviour;
+import bothack.agents.behaviours.*;
 import bothack.agents.messages.ErrorMessage;
 import bothack.classes.Address;
 import jade.core.AID;
@@ -31,10 +28,13 @@ public class NethackAgent extends Agent {
     private ArrayList<AID> visualizers;
     private String cookie;
     private Object[] args;
+    private long lastMessageAccepted;
+    private long delta;
 
     @Override
     public void setup(){
         tbf = new ThreadedBehaviourFactory();
+        delta = 10;
         args = getArguments();
         cookie = (String)args[0];
         loginAgent = new AID((String)args[2],AID.ISLOCALNAME);
@@ -57,6 +57,8 @@ public class NethackAgent extends Agent {
             address.setCookie(cookie);
             address.setDungeon((String)args[1]);
             addBehaviour(new ObjectSendingBehaviour(null,loginAgent,address,ACLMessage.ACCEPT_PROPOSAL));
+            addBehaviour(new TimerBehaviour(delta));
+            lastMessageAccepted = System.currentTimeMillis();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -187,5 +189,21 @@ public class NethackAgent extends Agent {
 
     public void setArgs(Object[] args) {
         this.args = args;
+    }
+
+    public long getLastMessageAccepted() {
+        return lastMessageAccepted;
+    }
+
+    public void setLastMessageAccepted(long lastMessageAccepted) {
+        this.lastMessageAccepted = lastMessageAccepted;
+    }
+
+    public long getDelta() {
+        return delta;
+    }
+
+    public void setDelta(long delta) {
+        this.delta = delta;
     }
 }

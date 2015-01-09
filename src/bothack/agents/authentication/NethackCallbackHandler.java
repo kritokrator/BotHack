@@ -6,11 +6,11 @@ import java.io.IOException;
 /**
  * Created by administrator on 12/22/14.
  */
-public class TestCallbackHandler implements CallbackHandler{
+public class NethackCallbackHandler implements CallbackHandler{
     String name;
     String password;
 
-    public TestCallbackHandler(String name, String password) {
+    public NethackCallbackHandler(String name, String password) {
         System.out.println("Callback Handler - constructor called");
         this.name = name;
         this.password = password;

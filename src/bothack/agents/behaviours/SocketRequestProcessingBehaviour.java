@@ -1,17 +1,14 @@
 package bothack.agents.behaviours;
 
 import bothack.agents.LoginAgent;
-import bothack.agents.authentication.TestCallbackHandler;
+import bothack.agents.authentication.NethackCallbackHandler;
 import bothack.agents.messages.ErrorMessage;
 import bothack.agents.messages.LoginMessage;
-import bothack.classes.Address;
-import bothack.classes.QueueElement;
+import bothack.classes.*;
+import bothack.classes.Error;
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
-import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.lang.acl.UnreadableException;
-import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
 
 import javax.security.auth.login.FailedLoginException;
@@ -22,7 +19,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
-import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
@@ -41,7 +37,7 @@ public class SocketRequestProcessingBehaviour extends OneShotBehaviour {
         this.socket = socket;
     }
 
-    public void startNewDungeon(String name,AID requestJade, Socket requestSocket){
+    public bothack.classes.Error startNewDungeon(String name,AID requestJade, Socket requestSocket){
         String dungeon = "dungeon_"+name;
         String cookie = "";
         Integer portNumber =0;
@@ -55,7 +51,9 @@ public class SocketRequestProcessingBehaviour extends OneShotBehaviour {
             myAgent.getContainerController().createNewAgent(dungeon,"bothack.agents.NethackAgent",args).start();
         } catch (StaleProxyException e) {
             e.printStackTrace();
+            return new Error(145,"Failed to create new agent");
         }
+        return null;
     }
 
     @Override
@@ -75,10 +73,19 @@ public class SocketRequestProcessingBehaviour extends OneShotBehaviour {
             if( o instanceof LoginMessage){
                 String name = ((LoginMessage) o).getName();
                 String password = ((LoginMessage) o).getPassword();
-                LoginContext lc = new LoginContext("Test", new TestCallbackHandler(name,password));
+                LoginContext lc = new LoginContext("Test", new NethackCallbackHandler(name,password));
                 lc.login();
                 /*m.marshal(startNewDungeon(name), out);*/
-                startNewDungeon(name, null, socket);
+                Error err = startNewDungeon(name, null, socket);
+                if(null != err){
+                    m.marshal(err, writer);
+                    out.write(writer.toString());
+                    out.newLine();
+                    out.flush();
+                    out.close();
+                    socket.close();
+                    return;
+                }
             }
             else{
                 bothack.classes.Error err = new bothack.classes.Error(126,"Message not recognized");

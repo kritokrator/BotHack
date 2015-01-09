@@ -1,10 +1,7 @@
 package bothack.agents.behaviours;
 
 import bothack.agents.NethackAgent;
-import bothack.agents.messages.InteractMessage;
-import bothack.agents.messages.QuitMessage;
-import bothack.agents.messages.RequestMessage;
-import bothack.agents.messages.SetupMessage;
+import bothack.agents.messages.*;
 import bothack.classes.Nethack;
 import bothack.classes.NethackMap;
 import bothack.classes.NethackMessageFactory;
@@ -22,6 +19,7 @@ public class NethackBehaviour extends SimpleBehaviour {
     private Nethack dungeon;
     private NethackMessageFactory factory;
     private boolean verbose;
+    private boolean end = false;
 
     public String getOwner() {
         return owner;
@@ -58,6 +56,7 @@ public class NethackBehaviour extends SimpleBehaviour {
     public void action() {
 
     }
+
 
     public void setup(SetupMessage msg,AID recipient, Socket requestSocket){
         if(msg.getRandom()){
@@ -146,59 +145,19 @@ public class NethackBehaviour extends SimpleBehaviour {
         }
     }
 
-/*    public void processMessage(RequestMessage o){
-       if(o.getAvatarUpdate()){
-
-       }
-       else if(o.getMapUpdate()){
-           NethackMap map = dungeon.getTheMap();
-           myAgent.addBehaviour(new ObjectSendingBehaviour(new AID(owner,AID.ISGUID),map));
-        }
-       else if(o.getAction() != null){
-           Object content = dungeon.action(o.getAction());
-           if(content == null){
-               //either quit or save method has been executed and null pointer was returned
-               //((NethackAgent) myAgent).getDungeons().remove(owner);
-               done();
-           }
-           else {
-               myAgent.addBehaviour(new ObjectSendingBehaviour(new AID(owner, AID.ISGUID), content));
-               if (dungeon.isUpdate()) {
-                   myAgent.addBehaviour(new visualizationUpdateBehaviour(owner, dungeon.getAvatar(), dungeon.getTheMap()));
-                   dungeon.setUpdate(false);
-               }
-           }
-       }
-        else if(o.getChoice() != null){
-           Object content = dungeon.action(o.getChoice());
-           if(content == null){
-               //either quit or save method has been executed and null pointer was returned
-               //((NethackAgent) myAgent).getDungeons().remove(owner);
-               done();
-           }
-           else {
-               myAgent.addBehaviour(new ObjectSendingBehaviour(new AID(owner, AID.ISGUID), content));
-               if (dungeon.isUpdate()) {
-                   myAgent.addBehaviour(new visualizationUpdateBehaviour(owner, dungeon.getAvatar(), dungeon.getTheMap()));
-                   dungeon.setUpdate(false);
-               }
-           }
-       }
-        else if(o.getMenuChoice()!= null){
-           Object content = dungeon.action(o.getMenuChoice());
-           myAgent.addBehaviour(new ObjectSendingBehaviour(new AID(owner,AID.ISGUID),content));
-           if(dungeon.isUpdate()){
-               myAgent.addBehaviour(new visualizationUpdateBehaviour(owner,dungeon.getAvatar(),dungeon.getTheMap()));
-               dungeon.setUpdate(false);
-           }
-       }
-        else{
-           System.out.printf("NethackAgent dungeon owner %s received empty request message\n", owner);
-       }
-    }*/
     public void quit(QuitMessage quitMessage,AID sender,Socket socket)
     {
-        dungeon.quitFast();
+        try {
+            dungeon.quitFast();
+            if(myAgent instanceof NethackAgent){
+                for(AID address : ((NethackAgent) myAgent).getVisualizers()){
+                    myAgent.addBehaviour(new ObjectSendingBehaviour(null,address,new QuitMessage(myAgent)));
+                }
+                myAgent.doDelete();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

@@ -45,6 +45,7 @@ public class NethackJadeMessageAcceptingBehaviour extends CyclicBehaviour {
                         NethackDirectionObject.class, NethackStringObject.class);
                 Unmarshaller unmarshaller = context.createUnmarshaller();
                 if(myAgent instanceof NethackAgent){
+                    ((NethackAgent) myAgent).setLastMessageAccepted(System.currentTimeMillis());
                     System.out.println("NethackAgent : Request message received");
                     Object o = unmarshaller.unmarshal(new StringReader(msg.getContent()));
                     if(o instanceof SetupMessage ){
