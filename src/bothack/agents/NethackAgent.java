@@ -34,7 +34,7 @@ public class NethackAgent extends Agent {
     @Override
     public void setup(){
         tbf = new ThreadedBehaviourFactory();
-        delta = 10;
+        delta = 3600;
         args = getArguments();
         cookie = (String)args[0];
         loginAgent = new AID((String)args[2],AID.ISLOCALNAME);
