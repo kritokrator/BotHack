@@ -28,7 +28,8 @@ public class NethackMap implements NethackMapInterface, Serializable{
     @Override
     public void update(Coordinate c, Tile t){
         if(level.containsKey(c)){
-            level.replace(c,t);
+            level.remove(c);
+            level.put(c,t);
         }
         else{
             level.put(c,t);
