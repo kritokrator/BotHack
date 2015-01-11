@@ -1,6 +1,5 @@
 package bothack.agents.authentication;
 
-import bothack.classes.*;
 import bothack.classes.Error;
 
 import javax.security.auth.Subject;
@@ -8,7 +7,6 @@ import javax.security.auth.callback.*;
 import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
-import javax.swing.*;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.sql.*;

@@ -1,9 +1,7 @@
 package bothack.agents.behaviours;
 
 import bothack.agents.BotAgent;
-import bothack.agents.MapAgent;
 import bothack.agents.messages.ErrorMessage;
-import bothack.agents.messages.InteractMessage;
 import bothack.agents.messages.UpdateMessage;
 import bothack.classes.*;
 import jade.core.AID;
@@ -12,7 +10,6 @@ import jade.lang.acl.ACLMessage;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.StringReader;
 

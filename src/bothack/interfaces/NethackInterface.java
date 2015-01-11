@@ -2,8 +2,6 @@ package bothack.interfaces;
 
 import bothack.classes.*;
 
-import java.io.IOException;
-
 /**
  * Created by administrator on 10/21/14.
  */

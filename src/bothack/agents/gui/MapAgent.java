@@ -1,7 +1,6 @@
 package bothack.agents.gui;
 
 import bothack.classes.VisualInterfaceWrapper;
-import com.sun.org.glassfish.external.statistics.Stats;
 
 import javax.swing.*;
 import java.awt.*;

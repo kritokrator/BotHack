@@ -8,11 +8,8 @@ import jade.lang.acl.ACLMessage;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by administrator on 12/8/14.

@@ -1,23 +1,13 @@
 package bothack.agents;
 
 import bothack.agents.behaviours.GenericMessageAcceptingBehaviour;
-import bothack.agents.behaviours.ObjectSendingBehaviour;
-import bothack.agents.messages.QuitMessage;
-import bothack.agents.messages.RequestMessage;
-import bothack.agents.messages.SetupMessage;
-import bothack.classes.NethackChoice;
 import bothack.classes.NethackChoiceObject;
 import bothack.classes.NethackMenuObject;
-import bothack.interfaces.Command;
 import jade.core.AID;
 import jade.core.Agent;
-import jade.core.behaviours.TickerBehaviour;
-import jade.core.behaviours.WakerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.SearchConstraints;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
-import jade.domain.introspection.ACLMessage;
 
 /**
  * Created by administrator on 11/21/14.

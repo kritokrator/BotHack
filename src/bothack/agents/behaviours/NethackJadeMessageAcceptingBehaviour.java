@@ -3,18 +3,15 @@ package bothack.agents.behaviours;
 import bothack.agents.NethackAgent;
 import bothack.agents.messages.InteractMessage;
 import bothack.agents.messages.QuitMessage;
-import bothack.agents.messages.RequestMessage;
 import bothack.agents.messages.SetupMessage;
 
 import java.io.StringReader;
 import java.lang.*;
-import java.util.Set;
 
 import bothack.classes.NethackChoice;
 import bothack.classes.NethackDirectionObject;
 import bothack.classes.NethackMenuChoice;
 import bothack.classes.NethackStringObject;
-import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.*;
 

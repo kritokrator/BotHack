@@ -1,7 +1,6 @@
 package bothack.agents.behaviours;
 
 import bothack.agents.NethackAgent;
-import bothack.agents.messages.ErrorMessage;
 import bothack.agents.messages.InteractMessage;
 import bothack.agents.messages.QuitMessage;
 import bothack.agents.messages.SetupMessage;

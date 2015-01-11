@@ -1,6 +1,5 @@
 package bothack.agents.messages;
 
-import jade.core.AID;
 import jade.core.Agent;
 
 import javax.xml.bind.annotation.XmlElement;

@@ -1,7 +1,6 @@
 package bothack.agents.gui;
 
 import bothack.agents.SocketTest;
-import bothack.agents.behaviours.ObjectSendingBehaviour;
 import bothack.agents.behaviours.SocketTransferBehaviour;
 import bothack.agents.messages.InteractMessage;
 import bothack.agents.messages.LoginMessage;
@@ -9,7 +8,6 @@ import bothack.agents.messages.QuitMessage;
 import bothack.agents.messages.SetupMessage;
 import bothack.classes.*;
 import bothack.interfaces.Command;
-import jade.lang.acl.ACLMessage;
 
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;

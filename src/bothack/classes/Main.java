@@ -1,24 +1,8 @@
 package bothack.classes;
 
-import bothack.agents.NethackAgent;
-import bothack.agents.gui.BotAgent;
-import bothack.agents.gui.GUITest;
-import bothack.agents.gui.MapAgent;
-import jade.security.Name;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import java.awt.*;
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.*;
-import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**

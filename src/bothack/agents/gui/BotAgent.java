@@ -1,6 +1,5 @@
 package bothack.agents.gui;
 
-import bothack.agents.LoginAgent;
 import bothack.agents.behaviours.ObjectSendingBehaviour;
 import bothack.agents.messages.*;
 import bothack.classes.*;
@@ -9,7 +8,6 @@ import jade.lang.acl.ACLMessage;
 
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;

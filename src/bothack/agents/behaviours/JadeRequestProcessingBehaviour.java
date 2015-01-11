@@ -5,7 +5,6 @@ import bothack.agents.authentication.NethackCallbackHandler;
 import bothack.agents.messages.ErrorMessage;
 import bothack.agents.messages.LoginMessage;
 import bothack.classes.*;
-import bothack.classes.Error;
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;

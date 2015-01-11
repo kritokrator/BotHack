@@ -1,8 +1,5 @@
 package bothack.classes;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;
 import java.util.ArrayList;

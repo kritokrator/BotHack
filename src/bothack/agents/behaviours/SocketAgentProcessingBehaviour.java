@@ -1,8 +1,6 @@
 package bothack.agents.behaviours;
 
 import bothack.agents.SocketTest;
-import bothack.agents.SocketTest;
-import bothack.agents.messages.DeathMessage;
 import bothack.agents.messages.ErrorMessage;
 import bothack.agents.messages.UpdateMessage;
 import bothack.classes.*;
@@ -10,10 +8,8 @@ import jade.core.behaviours.OneShotBehaviour;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.StringReader;
-import java.net.Socket;
 
 /**
  * Created by administrator on 12/31/14.
