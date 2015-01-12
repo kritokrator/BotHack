@@ -78,7 +78,8 @@ public class SocketRequestProcessingBehaviour extends OneShotBehaviour {
                 /*m.marshal(startNewDungeon(name), out);*/
                 Error err = startNewDungeon(name, null, socket);
                 if(null != err){
-                    m.marshal(err, writer);
+                    ErrorMessage errorMessage = new ErrorMessage(err);
+                    m.marshal(errorMessage, writer);
                     out.write(writer.toString());
                     out.newLine();
                     out.flush();

@@ -88,7 +88,8 @@ public class JadeRequestProcessingBehaviour extends OneShotBehaviour{
                 lc.login();
                 bothack.classes.Error err = startNewDungeon(name,request.getSender(),null);
                 if(err != null ){
-                    marshaller.marshal(err, writer);
+                    ErrorMessage errorMessage = new ErrorMessage(err);
+                    marshaller.marshal(errorMessage, writer);
                     ACLMessage reply = new ACLMessage(ACLMessage.REJECT_PROPOSAL);
                     reply.addReceiver(request.getSender());
                     reply.setContent(writer.toString());
