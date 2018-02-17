@@ -1,0 +1,116 @@
+#    Author: krito
+#    Date: 17.02.2018
+
+MAZE: "level_1", ' '
+#   You can change ' ' (= rock) to some other letter, or to   random  
+#   for a gehennom-style maze.
+
+FLAGS: 
+#   Remove the ones you don't want.  You'll usually remove the entire
+#   line.
+
+INIT_MAP: '.' , ' ' , true , true , lit , false
+#   This embeds your MAP inside a random level.  It's rarely used.
+#   Walkable terrain letter, barrier terrain, smoothed (normally true), 
+#   joined (normally true), lighting, is there a wall around the level
+#   or not.  
+
+
+# If you use more than one map, copy everything from here to the end.
+
+#   If you are making a random level, then everything from here down
+#   to ENDMAP gets replaced by NOMAP.
+
+GEOMETRY: center, center
+#   Left, half-left, center, half-right, or right.  
+#   Top, center, or bottom.
+
+
+#          10        20        30        40        50        60        70
+#012345678901234567890123456789012345678901234567890123456789012345678901234
+MAP
+0...........................................................................
+1...........................................................................
+2...........................................................................
+3...........................................................................
+4...........................................................................
+5...........................................................................
+6...........................................................................
+7...........................................................................
+8...........................................................................
+9...........................................................................
+0...........................................................................
+1...........................................................................
+2...........................................................................
+3...........................................................................
+4...........................................................................
+5...........................................................................
+6...........................................................................
+7...........................................................................
+8...........................................................................
+9...........................................................................
+0...........................................................................
+ENDMAP
+#012345678901234567890123456789012345678901234567890123456789012345678901234
+#          10        20        30        40        50        60        70
+
+
+RANDOM_OBJECTS:  [A list of letters for types of objects:  '['  ]
+RANDOM_PLACES:   [A list of locations: (5, 13)  ]
+RANDOM_MONSTERS: [A list of letters for types of monsters:  'D'  ]
+#   Delete the lines above, unless you are randomizing things in
+#   your level.  (Few levels do, although it's a very good feature.)
+
+
+#   Now place everything.  The common commands are:
+
+ALTAR:  [location], [alignment], [altar type]
+#   Noalign (= Moloch), law, neutral, chaos, coaligned, nonco-
+#      aligned, random, or align[number].
+#    Sanctum (high priest), shrine (priest), or altar (no priest).
+
+CONTAINER[chance]:  [object type], [object name], [location]
+	            plus, if you want:   , [special options]
+#   See 7.2.2 if you want to use a special option.
+
+DOOR:  [door state], [location]
+#   Open, closed, locked, nodoor, broken, or random.
+
+ENGRAVING:  [location], [engraving type], [what to engrave]
+#   Dust, engrave, burn, or mark.
+
+MONSTER[chance]: [monster letter], [monster name], [location]
+	           plus, if you want:   , [1 or more special options]
+# Special options:  peaceful or hostile, awake or asleep, alignment.
+
+NON_DIGGABLE: region
+NON_PASSWALL:  region
+#   Stops monsters & poly-ed players able to walk through walls.
+
+OBJECT [chance]:  [object type], [object name], [location]
+	            plus, if you want:   , [special options]
+#   See 7.2.2 if you want to use a special option.
+
+REGION: [region], [lighting], [room type]
+        optional:                        , [populated]
+#  room type:  "ordinary", "throne", "swamp", "vault", "beehive", 
+# "morgue", "barracks", "zoo", "delphi", "temple", "shop", "armor
+# shop", "scroll shop", "potion shop", "weapon shop", "food shop",
+# "ring shop", "wand shop", "tool shop", "book shop", "candle shop",
+# and probably "anthole", "cocknest", and "leprehall", too.
+#   populated:  filled or unfilled.
+
+STAIR: (1,1), down
+
+TRAP [chance]: [trap name], [location]
+#   "arrow", "dart", "falling rock", "board", "bear", "land mine",
+# "rolling boulder", "sleep gas", "rust", "fire", "pit", "spiked pit",
+# "hole", "trap door", "teleport", "level teleport", "magic portal",
+# "web", "statue", "magic", "anti magic", "polymorph", or "random".
+
+WALLIFY
+#  Plain rock adjacent to floor is changed to wall.
+
+
+# End of map.  Go back and remove the numbers at the end of each
+# line of the map.
